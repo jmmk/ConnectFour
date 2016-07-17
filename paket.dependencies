@@ -2,6 +2,7 @@ source https://www.nuget.org/api/v2
 nuget FAKE
 nuget Fantomas
 nuget FSharp.Core
+nuget FSharpx.Collections
 nuget FsUnit
 nuget nunit
 nuget NUnit.Runners
