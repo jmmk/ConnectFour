@@ -1,0 +1,8 @@
+/temp
+/packages
+**/bin
+**/obj
+/.fake
+/.paket/paket.exe
+*.userprefs
+/TestResult.xml
