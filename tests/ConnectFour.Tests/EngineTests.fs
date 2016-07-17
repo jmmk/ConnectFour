@@ -4,13 +4,10 @@ open FsUnitTyped
 open NUnit.Framework
 
 [<Test>]
-let ``swapTurn for Black player changes state to Red player``() = 
+let ``swapTurn changes state.playerTurn to opposite player``() = 
     let initial = { playerTurn = Black }
-    let expected = { playerTurn = Red }
-    ConnectFour.swapTurn initial |> shouldEqual expected
+    let swapped = swapTurn initial
+    swapped.playerTurn |> shouldEqual Red
 
-[<Test>]
-let ``swapTurn for Red player changes state to Black player``() = 
-    let initial = { playerTurn = Red }
-    let expected = { playerTurn = Black }
-    ConnectFour.swapTurn initial |> shouldEqual expected
+    let reSwapped = swapTurn swapped
+    reSwapped.playerTurn |> shouldEqual Black
