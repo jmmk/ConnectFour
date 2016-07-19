@@ -2,28 +2,37 @@ module ConnectFour
 
 open FSharpx.Collections
 
+let Ok = Choice1Of2
+let Error = Choice2Of2
+let (>>=) x y = Choice.bind y x
+let (<!>) x y = Choice.mapError y x
+
 type Piece = 
     | Black
     | Red
 
 /// Single column of the board
 /// Pieces can be "dropped" into the column, filling it from the "bottom" up
-type Column = Column of PersistentVector<Piece>
+type Column = 
+    | Column of PersistentVector<Piece>
 
 /// Array of columns representing the entire board
 /// Used for validating moves and displaying the board state
-type GameBoard = GameBoard of Column []
+type GameBoard = 
+    | GameBoard of PersistentVector<Column>
 
 /// Bit board used for scoring
-type BitBoard = BitBoard of int64
+type BitBoard = 
+    | BitBoard of int64
 
 /// Number of rows in the board
 let rows = 6
+
 /// Number of columns in the board
 let columns = 7
 
-let newColumn = Column PersistentVector.empty
-let newGameBoard = GameBoard (Array.create columns newColumn)
+let newColumn() = Column PersistentVector.empty
+let newGameBoard = GameBoard(PersistentVector.init columns (fun _ -> newColumn()))
 
 /// A full bit board has the following values at each space on the board:
 ///
@@ -41,18 +50,47 @@ let fullBitBoard = BitBoard 279258638311359L
 /// an empty bitboard is simply 0
 let newBitBoard = BitBoard 0L
 
+type PlayerBoard = 
+    | PlayerBoard of Piece * BitBoard
+
 type GameState = 
-    { playerTurn : Piece;
-      gameBoard: GameBoard;
-      bitBoard: BitBoard }
+    { playerTurn : Piece
+      gameBoard : GameBoard
+      bitBoard : BitBoard
+      blackBoard : PlayerBoard
+      redBoard : PlayerBoard }
+
+let newGameState piece = 
+    { playerTurn = piece
+      gameBoard = newGameBoard
+      bitBoard = newBitBoard
+      blackBoard = PlayerBoard(Red, newBitBoard)
+      redBoard = PlayerBoard(Black, newBitBoard) }
 
 let swapTurn state = 
     match state.playerTurn with
     | Black -> { state with playerTurn = Red }
     | Red -> { state with playerTurn = Black }
 
-
 let hasFreeSpace (Column spaces) = PersistentVector.length spaces < rows
+let isValid column = column > 0 && column <= columns
 
-let move (Column spaces) piece =
-    Column (PersistentVector.conj piece spaces)
+type EngineError = 
+    | FullColumn
+    | InvalidColumn
+
+let getColumn colNumber columns = 
+    if isValid colNumber then Ok <| PersistentVector.nth (colNumber - 1) columns
+    else Error InvalidColumn
+
+let addPiece piece column = 
+    let (Column spaces) = column
+    if hasFreeSpace column then Ok <| Column(PersistentVector.conj piece spaces)
+    else Error FullColumn
+
+let dropPiece state colNumber piece = 
+    let { gameBoard = (GameBoard columns) } = state
+    getColumn colNumber columns
+    >>= addPiece piece
+    |> Choice.map (fun col -> PersistentVector.update (colNumber - 1) col columns)
+    |> Choice.map (fun cols -> { state with gameBoard = GameBoard cols })
