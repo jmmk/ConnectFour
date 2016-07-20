@@ -7,14 +7,14 @@ let Error = Choice2Of2
 let (>>=) x y = Choice.bind y x
 let (<!>) x y = Choice.mapError y x
 
-type Piece = 
+type Color = 
     | Black
     | Red
 
 /// Single column of the board
 /// Pieces can be "dropped" into the column, filling it from the "bottom" up
 type Column = 
-    | Column of PersistentVector<Piece>
+    | Column of PersistentVector<Color>
 
 /// Array of columns representing the entire board
 /// Used for validating moves and displaying the board state
@@ -51,26 +51,32 @@ let fullBitBoard = BitBoard 279258638311359L
 let newBitBoard = BitBoard 0L
 
 type PlayerBoard = 
-    | PlayerBoard of Piece * BitBoard
+    | PlayerBoard of Color * BitBoard
+
+type GameStatus = 
+    | Winner of Color
+    | Turn of Color
+    | Draw
 
 type GameState = 
-    { playerTurn : Piece
+    { status : GameStatus
       gameBoard : GameBoard
       bitBoard : BitBoard
       blackBoard : PlayerBoard
       redBoard : PlayerBoard }
 
 let newGameState piece = 
-    { playerTurn = piece
+    { status = Turn piece
       gameBoard = newGameBoard
       bitBoard = newBitBoard
       blackBoard = PlayerBoard(Red, newBitBoard)
       redBoard = PlayerBoard(Black, newBitBoard) }
 
 let swapTurn state = 
-    match state.playerTurn with
-    | Black -> { state with playerTurn = Red }
-    | Red -> { state with playerTurn = Black }
+    match state.status with
+    | Turn Black -> { state with status = Turn Red }
+    | Turn Red -> { state with status = Turn Black }
+    | _ -> state
 
 let hasFreeSpace (Column spaces) = PersistentVector.length spaces < rows
 let isValid column = column > 0 && column <= columns

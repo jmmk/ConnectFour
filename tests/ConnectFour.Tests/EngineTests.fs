@@ -5,7 +5,7 @@ open FsUnitTyped
 open NUnit.Framework
 
 let initialState = 
-    { playerTurn = Black
+    { status = Turn Black
       gameBoard = newGameBoard
       bitBoard = newBitBoard
       blackBoard = PlayerBoard(Black, newBitBoard)
@@ -14,9 +14,9 @@ let initialState =
 [<Test>]
 let ``swapTurn changes state.playerTurn to opposite player``() = 
     let swapped = swapTurn initialState
-    swapped.playerTurn |> shouldEqual Red
+    swapped.status |> shouldEqual <| Turn Red
     let reSwapped = swapTurn swapped
-    reSwapped.playerTurn |> shouldEqual Black
+    reSwapped.status |> shouldEqual <| Turn Black
 
 [<Test>]
 let ``hasFreeSpace for empty column``() = 
