@@ -3,3 +3,4 @@ FsUnit
 nunit
 NUnit.Runners
 FSharpX.Collections
+ExtCore

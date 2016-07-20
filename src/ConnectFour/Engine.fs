@@ -32,7 +32,7 @@ let rows = 6
 let columns = 7
 
 let newColumn() = Column PersistentVector.empty
-let newGameBoard = GameBoard(PersistentVector.init columns (fun _ -> newColumn()))
+let newGameBoard() = GameBoard(PersistentVector.init columns (fun _ -> newColumn()))
 
 /// A full bit board has the following values at each space on the board:
 ///
@@ -67,7 +67,7 @@ type GameState =
 
 let newGameState piece = 
     { status = Turn piece
-      gameBoard = newGameBoard
+      gameBoard = newGameBoard()
       bitBoard = newBitBoard
       blackBoard = PlayerBoard(Red, newBitBoard)
       redBoard = PlayerBoard(Black, newBitBoard) }

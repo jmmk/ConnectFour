@@ -6,7 +6,7 @@ open NUnit.Framework
 
 let initialState = 
     { status = Turn Black
-      gameBoard = newGameBoard
+      gameBoard = newGameBoard()
       bitBoard = newBitBoard
       blackBoard = PlayerBoard(Black, newBitBoard)
       redBoard = PlayerBoard(Red, newBitBoard) }
@@ -67,15 +67,22 @@ let ``addPiece to full column``() =
     addPiece Black column
     |> shouldEqual
     <| Error FullColumn
-// [<Test>]
-// let ``move fills column from bottom``() = 
-//     let column = Column PersistentVector.empty
-//     move initialState 1 Black
-//     |> shouldEqual
-//     <| Column(PersistentVector.singleton Black)
-// [<Test>]
-// let ``move returns Error for full column``() = 
-//     let column = Column(PersistentVector.init rows (fun _ -> Black))
-//     move initialState column Black
-//     |> shouldEqual
-// <| Error FullColumn
+
+[<Test>]
+let ``dropPiece adds piece to column``() = 
+    let colNumber = 1
+    let newState = dropPiece initialState colNumber Black |> Choice.get
+    let { gameBoard = (GameBoard columns) } = newState
+    PersistentVector.nth (colNumber - 1) columns
+    |> shouldEqual
+    <| Column(PersistentVector.singleton Black)
+
+[<Test>]
+let ``dropPiece returns Error for full column``() = 
+    let colNumber = 1
+    let { gameBoard = (GameBoard columns) } = initialState
+    let fullColumn = Column <| PersistentVector.init rows (fun _ -> Black)
+    let fullColumnState = {initialState with gameBoard = GameBoard (PersistentVector.update (colNumber - 1) fullColumn columns)}
+    dropPiece fullColumnState colNumber Black
+    |> shouldEqual
+    <| Error FullColumn
