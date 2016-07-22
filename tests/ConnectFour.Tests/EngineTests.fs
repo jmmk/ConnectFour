@@ -86,3 +86,11 @@ let ``dropPiece returns Error for full column``() =
     dropPiece fullColumnState colNumber Black
     |> shouldEqual
     <| Error FullColumn
+
+[<Test>]
+let ``isWinningBoard is false for empty board`` () =
+    isWinningBoard newBitBoard |> shouldEqual false
+
+[<Test>]
+let ``isWinningBoard is true for full board`` () =
+    isWinningBoard fullBitBoard |> shouldEqual true

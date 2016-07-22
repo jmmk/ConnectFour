@@ -100,3 +100,11 @@ let dropPiece state colNumber piece =
     >>= addPiece piece
     |> Choice.map (fun col -> PersistentVector.update (colNumber - 1) col columns)
     |> Choice.map (fun cols -> { state with gameBoard = GameBoard cols })
+
+/// algorithm found here: http://stackoverflow.com/a/4261803
+let isWinningBoard (BitBoard bitBoard) = 
+    let y = bitBoard &&& (bitBoard >>> 6)
+    let z = bitBoard &&& (bitBoard >>> 7)
+    let w = bitBoard &&& (bitBoard >>> 8)
+    let x = bitBoard &&& (bitBoard >>> 1)
+    (y &&& (y >>> 12)) ||| (z &&& (z >>> 14)) ||| (w &&& (w >>> 16)) ||| (x &&& (x >>> 2)) |> (<>) 0L
