@@ -6,7 +6,7 @@ open NUnit.Framework
 
 let initialState = 
     { status = Turn Black
-      gameBoard = newGameBoard()
+      gameBoard = newGameBoard
       bitBoard = newBitBoard
       blackBoard = PlayerBoard(Black, newBitBoard)
       redBoard = PlayerBoard(Red, newBitBoard) }
@@ -42,14 +42,14 @@ let ``isValid column number``() =
 
 [<Test>]
 let ``getColumn for valid column number``() = 
-    let columns = PersistentVector.init columns (fun _ -> newColumn())
+    let columns = PersistentVector.init columns (fun _ -> newColumn)
     getColumn 1 columns
     |> shouldEqual
-    <| Ok(newColumn())
+    <| Ok(newColumn)
 
 [<Test>]
 let ``getColumn for invalid column number``() = 
-    let columns = PersistentVector.init columns (fun _ -> newColumn())
+    let columns = PersistentVector.init columns (fun _ -> newColumn)
     getColumn 0 columns
     |> shouldEqual
     <| Error InvalidColumn
