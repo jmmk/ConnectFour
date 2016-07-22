@@ -34,19 +34,36 @@ let columns = 7
 let newColumn = Column PersistentVector.empty
 let newGameBoard = GameBoard(PersistentVector.init columns (fun _ -> newColumn))
 
-/// A full bit board has the following values at each space on the board:
-///
-/// [0;  1;  2;  3;  4;  5
-///  7;  8;  9;  10; 11; 12
-///  14; 15; 16; 17; 18; 19
-///  21; 22; 23; 24; 25; 26
-///  28; 29; 30; 31; 32; 33
-///  35; 36; 37; 38; 39; 40
-///  42; 43; 44; 45; 46; 47]
-/// 
-/// which can be represented by the 64-bit integer 279258638311359L
-let fullBitBoard = BitBoard 279258638311359L
+/// Set the bit of integer i at position p to 1
+let bitSet i p =
+    i ||| (1 <<< p)
 
+/// A BitBoard is a 64-bit integer whose bits represent board spaces.
+/// The bit position represented by each board space is as follows:
+/// | 5 12 19 26 33 40 47 |
+/// | 4 11 18 25 32 39 46 |
+/// | 3 10 17 24 31 38 45 |
+/// | 2  9 16 23 30 37 44 |
+/// | 1  8 15 22 29 36 43 |
+/// | 0  7 14 21 28 35 42 |
+/// -----------------------
+///
+/// An "empty" board has 0's in each pown
+/// When a piece is played into a position, its bit becomes 1
+///
+/// If we create a list of these values:
+/// let boardValues = [0;  1;  2;  3;  4;  5
+///                    7;  8;  9;  10; 11; 12
+///                    14; 15; 16; 17; 18; 19
+///                    21; 22; 23; 24; 25; 26
+///                    28; 29; 30; 31; 32; 33
+///                    35; 36; 37; 38; 39; 40
+///                    42; 43; 44; 45; 46; 47]
+/// 
+/// We can compute the value of a full bit-board with the following:
+/// List.fold bitSet 0L boardValues
+/// which gives us 279258638311359L
+let fullBitBoard = BitBoard 279258638311359L
 /// an empty bitboard is simply 0
 let newBitBoard = BitBoard 0L
 
