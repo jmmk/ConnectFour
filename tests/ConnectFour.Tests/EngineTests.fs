@@ -94,3 +94,36 @@ let ``isWinningBoard is false for empty board`` () =
 [<Test>]
 let ``isWinningBoard is true for full board`` () =
     isWinningBoard fullBitBoard |> shouldEqual true
+
+let bitBoardTotal pieces =
+    List.fold bitSet 0 pieces
+
+[<Test>]
+let ``isWinningBoard vertical`` () =
+    // Four in a row
+    let bitBoard = BitBoard <| int64(bitBoardTotal [0; 1; 2; 3])
+    isWinningBoard bitBoard |> shouldEqual true
+
+    // Three in a row
+    let bitBoard = BitBoard <| int64(bitBoardTotal [0; 1; 2])
+    isWinningBoard bitBoard |> shouldEqual false
+
+[<Test>]
+let ``isWinningBoard horizontal`` () =
+    // Four in a row
+    let bitBoard = BitBoard <| int64(bitBoardTotal [0; 7; 14; 21])
+    isWinningBoard bitBoard |> shouldEqual true
+
+    // Three in a row
+    let bitBoard = BitBoard <| int64(bitBoardTotal [0; 7; 14])
+    isWinningBoard bitBoard |> shouldEqual false
+
+[<Test>]
+let ``isWinningBoard diagonal`` () =
+    // Four in a row
+    let bitBoard = BitBoard <| int64(bitBoardTotal [0; 8; 16; 24])
+    isWinningBoard bitBoard |> shouldEqual true
+
+    // Three in a row
+    let bitBoard = BitBoard <| int64(bitBoardTotal [0; 8; 16])
+    isWinningBoard bitBoard |> shouldEqual false
