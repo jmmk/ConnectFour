@@ -64,11 +64,13 @@ let ``addPiece to full column``() =
     addPiece Black column |> shouldEqual ^<| Error FullColumn
 
 [<Test>]
-let ``dropPiece adds piece to column``() = 
+let ``dropPiece adds piece to column, bitboard, and playerboard``() = 
     let colNumber = 1
     let newState = dropPiece initialState colNumber Black |> Choice.get
-    let { gameBoard = (GameBoard columns) } = newState
+    let { gameBoard = (GameBoard columns); playerBoards = playerBoards; bitBoard = (BitBoard bitBoard) } = newState
     PersistentVector.nth (colNumber - 1) columns |> shouldEqual ^<| Column(PersistentVector.singleton Black)
+    bitBoard |> shouldEqual 1L
+    Map.find Black playerBoards |> shouldEqual (BitBoard 1L)
 
 [<Test>]
 let ``dropPiece returns Error for full column``() = 
