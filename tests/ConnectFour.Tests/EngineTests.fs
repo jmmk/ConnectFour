@@ -4,19 +4,20 @@ open FSharpx.Collections
 open FsUnitTyped
 open NUnit.Framework
 
+let inline (^<|) f a = f a
+
 let initialState = 
     { status = Turn Black
       gameBoard = newGameBoard
       bitBoard = newBitBoard
-      blackBoard = PlayerBoard(Black, newBitBoard)
-      redBoard = PlayerBoard(Red, newBitBoard) }
+      playerBoards = Map.ofList [(Red, newBitBoard); (Black, newBitBoard)] }
 
 [<Test>]
 let ``swapTurn changes state.playerTurn to opposite player``() = 
     let swapped = swapTurn initialState
-    swapped.status |> shouldEqual <| Turn Red
+    swapped.status |> shouldEqual ^<| Turn Red
     let reSwapped = swapTurn swapped
-    reSwapped.status |> shouldEqual <| Turn Black
+    reSwapped.status |> shouldEqual ^<| Turn Black
 
 [<Test>]
 let ``hasFreeSpace for empty column``() = 
@@ -45,28 +46,28 @@ let ``getColumn for valid column number``() =
     let columns = PersistentVector.init columns (fun _ -> newColumn)
     getColumn 1 columns
     |> shouldEqual
-    <| Ok(newColumn)
+    ^<| Ok(newColumn)
 
 [<Test>]
 let ``getColumn for invalid column number``() = 
     let columns = PersistentVector.init columns (fun _ -> newColumn)
     getColumn 0 columns
     |> shouldEqual
-    <| Error InvalidColumn
+    ^<| Error InvalidColumn
 
 [<Test>]
 let ``addPiece to non-full column``() = 
     let column = Column PersistentVector.empty
     addPiece Black column
     |> shouldEqual
-    <| Ok(Column(PersistentVector.singleton Black))
+    ^<| Ok(Column(PersistentVector.singleton Black))
 
 [<Test>]
 let ``addPiece to full column``() = 
     let column = Column <| PersistentVector.init rows (fun _ -> Black)
     addPiece Black column
     |> shouldEqual
-    <| Error FullColumn
+    ^<| Error FullColumn
 
 [<Test>]
 let ``dropPiece adds piece to column``() = 
@@ -74,8 +75,8 @@ let ``dropPiece adds piece to column``() =
     let newState = dropPiece initialState colNumber Black |> Choice.get
     let { gameBoard = (GameBoard columns) } = newState
     PersistentVector.nth (colNumber - 1) columns
-    |> shouldEqual
-    <| Column(PersistentVector.singleton Black)
+    |> shouldEqual 
+    ^<| Column(PersistentVector.singleton Black)
 
 [<Test>]
 let ``dropPiece returns Error for full column``() = 
@@ -85,7 +86,7 @@ let ``dropPiece returns Error for full column``() =
     let fullColumnState = {initialState with gameBoard = GameBoard (PersistentVector.update (colNumber - 1) fullColumn columns)}
     dropPiece fullColumnState colNumber Black
     |> shouldEqual
-    <| Error FullColumn
+    ^<| Error FullColumn
 
 [<Test>]
 let ``isWinningBoard is false for empty board`` () =
@@ -96,34 +97,41 @@ let ``isWinningBoard is true for full board`` () =
     isWinningBoard fullBitBoard |> shouldEqual true
 
 let bitBoardTotal pieces =
-    List.fold bitSet 0 pieces
+    List.fold bitSet 0L pieces
 
 [<Test>]
 let ``isWinningBoard vertical`` () =
     // Four in a row
-    let bitBoard = BitBoard <| int64(bitBoardTotal [0; 1; 2; 3])
+    let bitBoard = BitBoard <| bitBoardTotal [0; 1; 2; 3]
     isWinningBoard bitBoard |> shouldEqual true
 
     // Three in a row
-    let bitBoard = BitBoard <| int64(bitBoardTotal [0; 1; 2])
+    let bitBoard = BitBoard <| bitBoardTotal [0; 1; 2]
     isWinningBoard bitBoard |> shouldEqual false
 
 [<Test>]
 let ``isWinningBoard horizontal`` () =
     // Four in a row
-    let bitBoard = BitBoard <| int64(bitBoardTotal [0; 7; 14; 21])
+    let bitBoard = BitBoard <| bitBoardTotal [0; 7; 14; 21]
+    isWinningBoard bitBoard |> shouldEqual true
+
+    let bitBoard = BitBoard <| bitBoardTotal [26; 33; 40; 47;]
     isWinningBoard bitBoard |> shouldEqual true
 
     // Three in a row
-    let bitBoard = BitBoard <| int64(bitBoardTotal [0; 7; 14])
+    let bitBoard = BitBoard <| bitBoardTotal [0; 7; 14]
     isWinningBoard bitBoard |> shouldEqual false
+    
+    let bitBoard = BitBoard <| bitBoardTotal [26; 33; 40;]
+    isWinningBoard bitBoard |> shouldEqual false
+
 
 [<Test>]
 let ``isWinningBoard diagonal`` () =
     // Four in a row
-    let bitBoard = BitBoard <| int64(bitBoardTotal [0; 8; 16; 24])
+    let bitBoard = BitBoard <| bitBoardTotal [0; 8; 16; 24]
     isWinningBoard bitBoard |> shouldEqual true
 
     // Three in a row
-    let bitBoard = BitBoard <| int64(bitBoardTotal [0; 8; 16])
+    let bitBoard = BitBoard <| bitBoardTotal [0; 8; 16]
     isWinningBoard bitBoard |> shouldEqual false
