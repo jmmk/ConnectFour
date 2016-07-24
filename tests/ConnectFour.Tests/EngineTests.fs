@@ -119,3 +119,14 @@ let ``isWinningBoard diagonal``() =
     // Three in a row
     let bitBoard = BitBoard <| bitBoardTotal [ 0; 8; 16 ]
     isWinningBoard bitBoard |> shouldEqual false
+
+[<Test>]
+let endToEnd() = 
+    initialState
+    |> (fun state -> dropPiece state 1 Black |> Choice.get)
+    |> (fun state -> dropPiece state 1 Black |> Choice.get)
+    |> (fun state -> dropPiece state 1 Black |> Choice.get)
+    |> (fun state -> dropPiece state 1 Black |> Choice.get)
+    |> (fun { playerBoards = playerBoards } -> Map.find Black playerBoards)
+    |> isWinningBoard
+    |> shouldEqual true
