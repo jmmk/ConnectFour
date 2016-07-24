@@ -33,8 +33,7 @@ let newColumn = Column PersistentVector.empty
 let newGameBoard = GameBoard(PersistentVector.init columns (fun _ -> newColumn))
 
 /// Set the bit at position i to 1
-let bitSet (bitBoard: int64) i =
-    bitBoard ||| (1L <<< i)
+let bitSet (bitBoard : int64) i = bitBoard ||| (1L <<< i)
 
 /// A BitBoard is a 64-bit integer whose bits represent board spaces.
 /// The bit position represented by each board space is as follows:
@@ -62,6 +61,7 @@ let bitSet (bitBoard: int64) i =
 /// List.fold bitSet 0L boardValues
 /// which gives us 279258638311359L
 let fullBitBoard = BitBoard 279258638311359L
+
 /// an empty bitboard is simply 0
 let newBitBoard = BitBoard 0L
 
@@ -73,14 +73,16 @@ type GameStatus =
 type GameState = 
     { status : GameStatus
       gameBoard : GameBoard
-      playerBoards: Map<Color, BitBoard>
+      playerBoards : Map<Color, BitBoard>
       bitBoard : BitBoard }
 
 let newGameState piece = 
     { status = Turn piece
       gameBoard = newGameBoard
       bitBoard = newBitBoard
-      playerBoards = Map.ofList [(Red, newBitBoard); (Black, newBitBoard)] }
+      playerBoards = 
+          Map.ofList [ (Red, newBitBoard)
+                       (Black, newBitBoard) ] }
 
 let swapTurn state = 
     match state.status with
@@ -104,23 +106,23 @@ let addPiece piece column =
     if hasFreeSpace column then Ok <| Column(PersistentVector.conj piece spaces)
     else Error FullColumn
 
-let updateGameBoard state colNumber piece =
+let updateGameBoard state colNumber piece = 
     let { gameBoard = (GameBoard columns) } = state
     getColumn colNumber columns
     |> Choice.bind (fun col -> addPiece piece col)
-    |> Choice.map (fun col -> GameBoard (PersistentVector.update (colNumber - 1) col columns))
+    |> Choice.map (fun col -> GameBoard(PersistentVector.update (colNumber - 1) col columns))
 
-let addBit (BitBoard bitBoard) colNumber col =
+let addBit (BitBoard bitBoard) colNumber col = 
     let x = colNumber - 1
     let y = (PersistentVector.length col) - 1
-    BitBoard (bitSet bitBoard ((x * 7) + y))
+    BitBoard(bitSet bitBoard ((x * 7) + y))
 
-let updateBitBoard state colNumber =
-    let { bitBoard = bitBoard; gameBoard = (GameBoard columns)  } = state
+let updateBitBoard state colNumber = 
+    let { bitBoard = bitBoard; gameBoard = (GameBoard columns) } = state
     let (Column column) = PersistentVector.nth (colNumber - 1) columns
     addBit bitBoard colNumber column
 
-let updatePlayerBoards state colNumber piece =
+let updatePlayerBoards state colNumber piece = 
     let { playerBoards = playerBoards; gameBoard = (GameBoard columns) } = state
     let (Column column) = PersistentVector.nth (colNumber - 1) columns
     let playerBoard = Map.find piece playerBoards
