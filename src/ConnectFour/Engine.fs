@@ -4,8 +4,6 @@ open FSharpx.Collections
 
 let Ok = Choice1Of2
 let Error = Choice2Of2
-let (>>=) x y = Choice.bind y x
-let (<!>) x y = Choice.mapError y x
 
 type Color = 
     | Black
@@ -34,9 +32,9 @@ let columns = 7
 let newColumn = Column PersistentVector.empty
 let newGameBoard = GameBoard(PersistentVector.init columns (fun _ -> newColumn))
 
-/// Set the bit of integer i at position p to 1
-let bitSet i p =
-    i ||| (1 <<< p)
+/// Set the bit at position i to 1
+let bitSet (bitBoard: int64) i =
+    bitBoard ||| (1L <<< i)
 
 /// A BitBoard is a 64-bit integer whose bits represent board spaces.
 /// The bit position represented by each board space is as follows:
@@ -67,9 +65,6 @@ let fullBitBoard = BitBoard 279258638311359L
 /// an empty bitboard is simply 0
 let newBitBoard = BitBoard 0L
 
-type PlayerBoard = 
-    | PlayerBoard of Color * BitBoard
-
 type GameStatus = 
     | Winner of Color
     | Turn of Color
@@ -78,16 +73,14 @@ type GameStatus =
 type GameState = 
     { status : GameStatus
       gameBoard : GameBoard
-      bitBoard : BitBoard
-      blackBoard : PlayerBoard
-      redBoard : PlayerBoard }
+      playerBoards: Map<Color, BitBoard>
+      bitBoard : BitBoard }
 
 let newGameState piece = 
     { status = Turn piece
       gameBoard = newGameBoard
       bitBoard = newBitBoard
-      blackBoard = PlayerBoard(Red, newBitBoard)
-      redBoard = PlayerBoard(Black, newBitBoard) }
+      playerBoards = Map.ofList [(Red, newBitBoard); (Black, newBitBoard)] }
 
 let swapTurn state = 
     match state.status with
@@ -111,12 +104,33 @@ let addPiece piece column =
     if hasFreeSpace column then Ok <| Column(PersistentVector.conj piece spaces)
     else Error FullColumn
 
-let dropPiece state colNumber piece = 
+let updateGameBoard state colNumber piece =
     let { gameBoard = (GameBoard columns) } = state
     getColumn colNumber columns
-    >>= addPiece piece
-    |> Choice.map (fun col -> PersistentVector.update (colNumber - 1) col columns)
-    |> Choice.map (fun cols -> { state with gameBoard = GameBoard cols })
+    |> Choice.bind (fun col -> addPiece piece col)
+    |> Choice.map (fun col -> GameBoard (PersistentVector.update (colNumber - 1) col columns))
+
+let addBit (BitBoard bitBoard) colNumber col =
+    let x = colNumber - 1
+    let y = (PersistentVector.length col) - 1
+    BitBoard (bitSet bitBoard ((x * 7) + y))
+
+let updateBitBoard state colNumber =
+    let { bitBoard = bitBoard; gameBoard = (GameBoard columns)  } = state
+    let (Column column) = PersistentVector.nth (colNumber - 1) columns
+    addBit bitBoard colNumber column
+
+let updatePlayerBoards state colNumber piece =
+    let { playerBoards = playerBoards; gameBoard = (GameBoard columns) } = state
+    let (Column column) = PersistentVector.nth (colNumber - 1) columns
+    let playerBoard = Map.find piece playerBoards
+    Map.add piece (addBit playerBoard colNumber column) playerBoards
+
+let dropPiece state colNumber piece = 
+    updateGameBoard state colNumber piece
+    |> Choice.map (fun gameBoard -> { state with gameBoard = gameBoard })
+    |> Choice.map (fun state -> { state with bitBoard = updateBitBoard state colNumber })
+    |> Choice.map (fun state -> { state with playerBoards = updatePlayerBoards state colNumber piece })
 
 /// algorithm found here: http://stackoverflow.com/a/4261803
 let isWinningBoard (BitBoard bitBoard) = 
