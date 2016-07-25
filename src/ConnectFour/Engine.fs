@@ -84,18 +84,29 @@ let newGameState piece =
           Map.ofList [ (Red, newBitBoard)
                        (Black, newBitBoard) ] }
 
-let swapTurn state = 
-    match state.status with
-    | Turn Black -> { state with status = Turn Red }
-    | Turn Red -> { state with status = Turn Black }
-    | _ -> state
+let swapTurn status = 
+    match status with
+    | Turn Black -> Turn Red
+    | Turn Red -> Turn Black
+    | _ -> status
 
 let hasFreeSpace (Column spaces) = PersistentVector.length spaces < rows
 let isValid column = column > 0 && column <= columns
 
+/// algorithm found here: http://stackoverflow.com/a/4261803
+let isWinningBoard (BitBoard bitBoard) = 
+    let y = bitBoard &&& (bitBoard >>> 6)
+    let z = bitBoard &&& (bitBoard >>> 7)
+    let w = bitBoard &&& (bitBoard >>> 8)
+    let x = bitBoard &&& (bitBoard >>> 1)
+    (y &&& (y >>> 12)) ||| (z &&& (z >>> 14)) ||| (w &&& (w >>> 16)) ||| (x &&& (x >>> 2)) |> (<>) 0L
+
+let isDrawBoard bitBoard = bitBoard = fullBitBoard
+
 type EngineError = 
     | FullColumn
     | InvalidColumn
+    | IllegalOperation
 
 let getColumn colNumber columns = 
     if isValid colNumber then Ok <| PersistentVector.nth (colNumber - 1) columns
@@ -128,16 +139,19 @@ let updatePlayerBoards state colNumber piece =
     let playerBoard = Map.find piece playerBoards
     Map.add piece (addBit playerBoard colNumber column) playerBoards
 
+let updateStatus state colNumber piece = 
+    let { status = status; playerBoards = playerBoards } = state
+    let playerBoard = Map.find piece playerBoards
+    match status with
+    | Turn piece -> 
+        if isWinningBoard playerBoard then Winner piece
+        elif isDrawBoard playerBoard then Draw
+        else swapTurn status
+    | _ -> status
+
 let dropPiece state colNumber piece = 
     updateGameBoard state colNumber piece
     |> Choice.map (fun gameBoard -> { state with gameBoard = gameBoard })
     |> Choice.map (fun state -> { state with bitBoard = updateBitBoard state colNumber })
     |> Choice.map (fun state -> { state with playerBoards = updatePlayerBoards state colNumber piece })
-
-/// algorithm found here: http://stackoverflow.com/a/4261803
-let isWinningBoard (BitBoard bitBoard) = 
-    let y = bitBoard &&& (bitBoard >>> 6)
-    let z = bitBoard &&& (bitBoard >>> 7)
-    let w = bitBoard &&& (bitBoard >>> 8)
-    let x = bitBoard &&& (bitBoard >>> 1)
-    (y &&& (y >>> 12)) ||| (z &&& (z >>> 14)) ||| (w &&& (w >>> 16)) ||| (x &&& (x >>> 2)) |> (<>) 0L
+    |> Choice.map (fun state -> { state with status = updateStatus state colNumber piece })

@@ -15,11 +15,9 @@ let initialState =
                        (Black, newBitBoard) ] }
 
 [<Test>]
-let ``swapTurn changes state.playerTurn to opposite player``() = 
-    let swapped = swapTurn initialState
-    swapped.status |> shouldEqual ^<| Turn Red
-    let reSwapped = swapTurn swapped
-    reSwapped.status |> shouldEqual ^<| Turn Black
+let ``swapTurn changes Turn status to opposite player``() = 
+    swapTurn (Turn Black) |> shouldEqual ^<| Turn Red
+    swapTurn (Turn Red) |> shouldEqual ^<| Turn Black
 
 [<Test>]
 let ``hasFreeSpace for empty column``() = 
@@ -121,12 +119,19 @@ let ``isWinningBoard diagonal``() =
     isWinningBoard bitBoard |> shouldEqual false
 
 [<Test>]
-let endToEnd() = 
-    initialState
-    |> (fun state -> dropPiece state 1 Black |> Choice.get)
-    |> (fun state -> dropPiece state 1 Black |> Choice.get)
-    |> (fun state -> dropPiece state 1 Black |> Choice.get)
-    |> (fun state -> dropPiece state 1 Black |> Choice.get)
+let ``end to end``() = 
+    let endState = 
+        initialState
+        |> (fun state -> dropPiece state 1 Black |> Choice.get)
+        |> (fun state -> dropPiece state 2 Red |> Choice.get)
+        |> (fun state -> dropPiece state 1 Black |> Choice.get)
+        |> (fun state -> dropPiece state 2 Red |> Choice.get)
+        |> (fun state -> dropPiece state 1 Black |> Choice.get)
+        |> (fun state -> dropPiece state 2 Red |> Choice.get)
+        |> (fun state -> dropPiece state 1 Black |> Choice.get)
+    endState
     |> (fun { playerBoards = playerBoards } -> Map.find Black playerBoards)
     |> isWinningBoard
     |> shouldEqual true
+    let { status = status } = endState
+    status |> shouldEqual ^<| Winner Black
