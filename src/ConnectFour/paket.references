@@ -1,3 +1,2 @@
-FSharp.Core
 FSharpx.Collections
-ExtCore
+System.Collections.Immutable

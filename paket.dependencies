@@ -1,10 +1,6 @@
 source https://www.nuget.org/api/v2
-nuget ExtCore
 nuget FAKE
 nuget Fantomas
-nuget FSharp.Compiler.Service
-nuget FSharp.Core
 nuget FSharpx.Collections
 nuget FsUnit
-nuget nunit
 nuget NUnit.Runners

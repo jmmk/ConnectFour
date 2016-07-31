@@ -2,8 +2,22 @@ module ConnectFour
 
 open FSharpx.Collections
 
+// Result types/functions
 let Ok = Choice1Of2
 let Error = Choice2Of2
+let bind f result = 
+    match result with
+    | Choice1Of2 ok -> f ok
+    | Choice2Of2 err -> Choice2Of2 err
+let map f result = 
+    match result with
+    | Choice1Of2 ok -> Choice1Of2 (f ok)
+    | Choice2Of2 err -> Choice2Of2 err
+let get result =
+    match result with
+    | Choice1Of2 ok -> ok
+    | Choice2Of2 err -> failwith (sprintf "%A" err)
+
 
 type Color = 
     | Black
@@ -151,7 +165,7 @@ let updateStatus state colNumber piece =
 
 let dropPiece state colNumber piece = 
     updateGameBoard state colNumber piece
-    |> Choice.map (fun gameBoard -> { state with gameBoard = gameBoard })
-    |> Choice.map (fun state -> { state with bitBoard = updateBitBoard state colNumber })
-    |> Choice.map (fun state -> { state with playerBoards = updatePlayerBoards state colNumber piece })
-    |> Choice.map (fun state -> { state with status = updateStatus state colNumber piece })
+    |> map (fun gameBoard -> { state with gameBoard = gameBoard })
+    |> map (fun state -> { state with bitBoard = updateBitBoard state colNumber })
+    |> map (fun state -> { state with playerBoards = updatePlayerBoards state colNumber piece })
+    |> map (fun state -> { state with status = updateStatus state colNumber piece })

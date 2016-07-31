@@ -122,13 +122,13 @@ let ``isWinningBoard diagonal``() =
 let ``end to end``() = 
     let endState = 
         initialState
-        |> (fun state -> dropPiece state 1 Black |> Choice.get)
-        |> (fun state -> dropPiece state 2 Red |> Choice.get)
-        |> (fun state -> dropPiece state 1 Black |> Choice.get)
-        |> (fun state -> dropPiece state 2 Red |> Choice.get)
-        |> (fun state -> dropPiece state 1 Black |> Choice.get)
-        |> (fun state -> dropPiece state 2 Red |> Choice.get)
-        |> (fun state -> dropPiece state 1 Black |> Choice.get)
+        |> (fun state -> dropPiece state 1 Black |> get)
+        |> (fun state -> dropPiece state 2 Red |> get)
+        |> (fun state -> dropPiece state 1 Black |> get)
+        |> (fun state -> dropPiece state 2 Red |> get)
+        |> (fun state -> dropPiece state 1 Black |> get)
+        |> (fun state -> dropPiece state 2 Red |> get)
+        |> (fun state -> dropPiece state 1 Black |> get)
     endState
     |> (fun { playerBoards = playerBoards } -> Map.find Black playerBoards)
     |> isWinningBoard

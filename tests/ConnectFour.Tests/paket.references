@@ -1,6 +1,3 @@
-FSharp.Core
 FsUnit
-nunit
 NUnit.Runners
 FSharpX.Collections
-ExtCore
