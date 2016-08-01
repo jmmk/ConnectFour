@@ -1,8 +1,9 @@
 module ConnectFour
 
-open FSharpx.Collections
+open Fable.Import
+open Fable.Import.mori
 
-// Result types/functions
+// Result shim until F# 4.1
 let Ok = Choice1Of2
 let Error = Choice2Of2
 let bind f result = 
@@ -18,7 +19,6 @@ let get result =
     | Choice1Of2 ok -> ok
     | Choice2Of2 err -> failwith (sprintf "%A" err)
 
-
 type Color = 
     | Black
     | Red
@@ -26,16 +26,16 @@ type Color =
 /// Single column of the board
 /// Pieces can be "dropped" into the column, filling it from the "bottom" up
 type Column = 
-    | Column of PersistentVector<Color>
+    | Column of Vector<Color>
 
 /// Array of columns representing the entire board
 /// Used for validating moves and displaying the board state
 type GameBoard = 
-    | GameBoard of PersistentVector<Column>
+    | GameBoard of Vector<Column>
 
 /// Bit board used for scoring
 type BitBoard = 
-    | BitBoard of int64
+    | BitBoard of Long
 
 /// Number of rows in the board
 let rows = 6
@@ -43,11 +43,11 @@ let rows = 6
 /// Number of columns in the board
 let columns = 7
 
-let newColumn = Column PersistentVector.empty
-let newGameBoard = GameBoard(PersistentVector.init columns (fun _ -> newColumn))
+let newColumn = Column <| Vector.vector()
+let newGameBoard = GameBoard(Vector.vector(Array.init columns (fun _ -> newColumn)))
 
 /// Set the bit at position i to 1
-let bitSet (bitBoard : int64) i = bitBoard ||| (1L <<< i)
+let bitSet (bitBoard : Long) (i: int) = bitBoard.``or``(Long.ONE.shiftLeft(i))
 
 /// A BitBoard is a 64-bit integer whose bits represent board spaces.
 /// The bit position represented by each board space is as follows:
@@ -74,10 +74,10 @@ let bitSet (bitBoard : int64) i = bitBoard ||| (1L <<< i)
 /// We can compute the value of a full bit-board with the following:
 /// List.fold bitSet 0L boardValues
 /// which gives us 279258638311359L
-let fullBitBoard = BitBoard 279258638311359L
+let fullBitBoard = BitBoard <| Long.fromNumber(279258638311359L)
 
 /// an empty bitboard is simply 0
-let newBitBoard = BitBoard 0L
+let newBitBoard = BitBoard Long.ZERO
 
 type GameStatus = 
     | Winner of Color
@@ -104,16 +104,17 @@ let swapTurn status =
     | Turn Red -> Turn Black
     | _ -> status
 
-let hasFreeSpace (Column spaces) = PersistentVector.length spaces < rows
+let hasFreeSpace (Column spaces) = Vector.count(spaces) < rows
 let isValid column = column > 0 && column <= columns
 
 /// algorithm found here: http://stackoverflow.com/a/4261803
 let isWinningBoard (BitBoard bitBoard) = 
-    let y = bitBoard &&& (bitBoard >>> 6)
-    let z = bitBoard &&& (bitBoard >>> 7)
-    let w = bitBoard &&& (bitBoard >>> 8)
-    let x = bitBoard &&& (bitBoard >>> 1)
-    (y &&& (y >>> 12)) ||| (z &&& (z >>> 14)) ||| (w &&& (w >>> 16)) ||| (x &&& (x >>> 2)) |> (<>) 0L
+    let y = bitBoard.``and``(bitBoard.shiftRight(6))
+    let z = bitBoard.``and``(bitBoard.shiftRight(7))
+    let w = bitBoard.``and``(bitBoard.shiftRight(8))
+    let x = bitBoard.``and``(bitBoard.shiftRight(1))
+    (y.``and``(y.shiftRight(12))).``or``(z.``and``(z.shiftRight(14))).``or``(w.``and``(w.shiftRight(16))).``or``(x.``and``(x.shiftRight(2))) 
+    |> (fun long -> not(long.isZero()))
 
 let isDrawBoard bitBoard = bitBoard = fullBitBoard
 
@@ -123,33 +124,33 @@ type EngineError =
     | IllegalOperation
 
 let getColumn colNumber columns = 
-    if isValid colNumber then Ok <| PersistentVector.nth (colNumber - 1) columns
+    if isValid colNumber then Ok <| Vector.nth(columns, (colNumber - 1))
     else Error InvalidColumn
 
 let addPiece piece column = 
     let (Column spaces) = column
-    if hasFreeSpace column then Ok <| Column(PersistentVector.conj piece spaces)
+    if hasFreeSpace column then Ok <| Column(Vector.conj(spaces, piece))
     else Error FullColumn
 
 let updateGameBoard state colNumber piece = 
     let { gameBoard = (GameBoard columns) } = state
     getColumn colNumber columns
-    |> Choice.bind (fun col -> addPiece piece col)
-    |> Choice.map (fun col -> GameBoard(PersistentVector.update (colNumber - 1) col columns))
+    |> bind (fun col -> addPiece piece col)
+    |> map (fun col -> GameBoard(Vector.assoc(columns, (colNumber - 1), col)))
 
 let addBit (BitBoard bitBoard) colNumber col = 
     let x = colNumber - 1
-    let y = (PersistentVector.length col) - 1
+    let y = Vector.count(col) - 1
     BitBoard(bitSet bitBoard ((x * 7) + y))
 
 let updateBitBoard state colNumber = 
     let { bitBoard = bitBoard; gameBoard = (GameBoard columns) } = state
-    let (Column column) = PersistentVector.nth (colNumber - 1) columns
+    let (Column column) = Vector.nth(columns, (colNumber - 1))
     addBit bitBoard colNumber column
 
 let updatePlayerBoards state colNumber piece = 
     let { playerBoards = playerBoards; gameBoard = (GameBoard columns) } = state
-    let (Column column) = PersistentVector.nth (colNumber - 1) columns
+    let (Column column) = Vector.nth(columns, (colNumber - 1))
     let playerBoard = Map.find piece playerBoards
     Map.add piece (addBit playerBoard colNumber column) playerBoards
 
