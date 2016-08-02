@@ -4,35 +4,54 @@ open ConnectFour
 
 open Fable.Core
 open Fable.Import
+open Fable.Import.long
+open Fable.Import.mori
 
 open Fable.Helpers
 open Fable.Helpers.Virtualdom
 open Fable.Helpers.Virtualdom.Html
 
 // Evaluate polyfill code before anything else
-Node.require.Invoke("core-js") |> ignore
+// Node.require.Invoke("core-js") |> ignore
 
-let cell row column =
-    let isEmpty = if (row + column) % 3 = 0 then true else false
-    let isRed = if (row + column) % 3 = 1 then true else false
-    div [attribute "class" "cell"] 
-        [div [attribute "class" (if isEmpty then "piece empty" elif isRed then "piece red" else "piece black")] []]
+type Action =
+    | ColumnClick of int
 
-let row i = 
+let cell colIndex color =
+    let className =
+        match color with
+        | Red -> "red"
+        | Black -> "black"
+        | Empty -> "empty"
+    div [ attribute "class" "cell"
+          Events.onMouseClick (fun _ -> ColumnClick (colIndex + 1))] 
+        [div [attribute "class" (sprintf "piece %s" className)] []]
+
+let row colors = 
+    let endIndex = columns - 1
     div [attribute "class" "row"]
-        (List.map (cell i) [0..6])
+        (List.map (fun colIndex -> cell colIndex (Vector.nth(colors, colIndex))) [0..endIndex])
+
+let rowFromColumns columns rowIndex =
+    Vector.map((fun (Column col) -> Vector.nth(col, rowIndex, Empty)), columns)
 
 let view model =
+    let {gameBoard = (GameBoard columns)} = model
+    let startIndex = rows - 1
     div [attribute "class" "board"] 
-        (List.map row [5..-1..0])
+        (List.map (fun rowIndex -> row (rowFromColumns columns rowIndex)) [startIndex..(-1)..0])
 
-let update model action = (model, [], [])
+let update model action = 
+    match action with
+    | ColumnClick colNumber -> 
+        match (dropPiece model colNumber) with
+        | (Ok updatedState) -> updatedState
+        | Error err -> 
+            printfn "Error: %A" err
+            model
+    |> (fun m -> m, [], [])
 
-let board = newGameBoard
-
-printfn "%A" board
-
-App.createApp {Model = 0; View = view; Update = update}
+App.createApp {Model = newGameState Red; View = view; Update = update}
 |> App.withStartNode "#app"
 |> App.start Virtualdom.renderer
 |> ignore

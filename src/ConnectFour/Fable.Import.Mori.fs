@@ -15,5 +15,6 @@ module mori =
         static member vector([<ParamArray>] contents: 'T[]): Vector<'T> = failwith "JS only"
         static member conj(vector: Vector<'T>, value: 'T): Vector<'T> = failwith "JS only"
         static member assoc(vector: Vector<'T>, index: int, value: 'T): Vector<'T> = failwith "JS only"
-        static member nth(vector: Vector<'T>, index: int): 'T = failwith "JS only"
+        static member nth(vector: Vector<'T>, index: int, ?notFound: 'T): 'T = failwith "JS only"
         static member count(vector: Vector<'T>): int = failwith "JS only"
+        static member map(callback: Func<'T, 'U>, vector: Vector<'T>): Vector<'U> = failwith "JS only"

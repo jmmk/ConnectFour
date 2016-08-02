@@ -1,27 +1,32 @@
 module ConnectFour
 
-open Fable.Import
+open Fable.Import.long
 open Fable.Import.mori
 
 // Result shim until F# 4.1
+let (|Ok|Error|) choice =
+    match choice with
+    | Choice1Of2 a -> Ok a
+    | Choice2Of2 b -> Error b
 let Ok = Choice1Of2
 let Error = Choice2Of2
 let bind f result = 
     match result with
-    | Choice1Of2 ok -> f ok
-    | Choice2Of2 err -> Choice2Of2 err
+    | Ok a -> f a
+    | Error b -> Error b
 let map f result = 
     match result with
-    | Choice1Of2 ok -> Choice1Of2 (f ok)
-    | Choice2Of2 err -> Choice2Of2 err
+    | Ok a -> Ok (f a)
+    | Error b -> Error b
 let get result =
     match result with
-    | Choice1Of2 ok -> ok
-    | Choice2Of2 err -> failwith (sprintf "%A" err)
+    | Ok a -> a
+    | Error b -> failwith (sprintf "%A" b)
 
 type Color = 
     | Black
     | Red
+    | Empty
 
 /// Single column of the board
 /// Pieces can be "dropped" into the column, filling it from the "bottom" up
@@ -152,21 +157,30 @@ let updatePlayerBoards state colNumber piece =
     let { playerBoards = playerBoards; gameBoard = (GameBoard columns) } = state
     let (Column column) = Vector.nth(columns, (colNumber - 1))
     let playerBoard = Map.find piece playerBoards
+    printfn "Piece: %A" piece
+    printfn "Player Boards: %A" playerBoards
+    printfn "Contains Key: %A" (Map.containsKey piece playerBoards)
+    Map.iter (fun k v -> printfn "%A: %A" k v) playerBoards
+    printfn "About to call addBit with player board: %A" playerBoard
     Map.add piece (addBit playerBoard colNumber column) playerBoards
 
 let updateStatus state colNumber piece = 
-    let { status = status; playerBoards = playerBoards } = state
+    let { bitBoard = bitBoard; status = status; playerBoards = playerBoards } = state
     let playerBoard = Map.find piece playerBoards
     match status with
     | Turn piece -> 
         if isWinningBoard playerBoard then Winner piece
-        elif isDrawBoard playerBoard then Draw
+        elif isDrawBoard bitBoard then Draw
         else swapTurn status
     | _ -> status
 
-let dropPiece state colNumber piece = 
-    updateGameBoard state colNumber piece
-    |> map (fun gameBoard -> { state with gameBoard = gameBoard })
-    |> map (fun state -> { state with bitBoard = updateBitBoard state colNumber })
-    |> map (fun state -> { state with playerBoards = updatePlayerBoards state colNumber piece })
-    |> map (fun state -> { state with status = updateStatus state colNumber piece })
+let dropPiece state colNumber = 
+    let {status = status} = state
+    match status with
+    | Turn piece -> 
+        updateGameBoard state colNumber piece
+        |> map (fun gameBoard -> { state with gameBoard = gameBoard })
+        |> map (fun state -> { state with bitBoard = updateBitBoard state colNumber })
+        |> map (fun state -> { state with playerBoards = updatePlayerBoards state colNumber piece })
+        |> map (fun state -> { state with status = updateStatus state colNumber piece })
+    | _ -> Ok state
