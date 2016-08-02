@@ -8,7 +8,7 @@ open Fable.Import.mori
 let inline (^<|) f a = f a
 
 let shouldEqual (expected: 'T) (actual: 'T) =
-    Assert.AreEqual(expected, actual, sprintf "Expected: %A\nActual: %A" expected actual)
+    Assert.AreEqual(true, (expected = actual), sprintf "Expected: %A\nActual: %A" expected actual)
 
 let initialState = 
     { status = Turn Black
