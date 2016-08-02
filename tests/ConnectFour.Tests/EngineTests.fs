@@ -1,10 +1,14 @@
 module ConnectFour.Tests
 
-open FSharpx.Collections
-open FsUnitTyped
 open NUnit.Framework
 
+open Fable.Import
+open Fable.Import.mori
+
 let inline (^<|) f a = f a
+
+let shouldEqual (expected: 'T) (actual: 'T) =
+    Assert.AreEqual(expected, actual, sprintf "Expected: %A\nActual: %A" expected actual)
 
 let initialState = 
     { status = Turn Black
@@ -21,17 +25,17 @@ let ``swapTurn changes Turn status to opposite player``() =
 
 [<Test>]
 let ``hasFreeSpace for empty column``() = 
-    let column = Column PersistentVector.empty
+    let column = newColumn
     hasFreeSpace column |> shouldEqual true
 
 [<Test>]
 let ``hasFreeSpace for full column``() = 
-    let column = Column(PersistentVector.init rows (fun _ -> Black))
+    let column = Column(Vector.vector(Array.init columns (fun _ -> Black)))
     hasFreeSpace column |> shouldEqual false
 
 [<Test>]
 let ``hasFreeSpace for column with empty spaces``() = 
-    let column = Column(PersistentVector.init (rows - 1) (fun _ -> Black))
+    let column = Column(Vector.vector(Array.init (rows - 1) (fun _ -> Black)))
     hasFreeSpace column |> shouldEqual true
 
 [<Test>]
@@ -43,40 +47,40 @@ let ``isValid column number``() =
 
 [<Test>]
 let ``getColumn for valid column number``() = 
-    let columns = PersistentVector.init columns (fun _ -> newColumn)
+    let columns = Vector.vector(Array.init columns (fun _ -> newColumn))
     getColumn 1 columns |> shouldEqual ^<| Ok(newColumn)
 
 [<Test>]
 let ``getColumn for invalid column number``() = 
-    let columns = PersistentVector.init columns (fun _ -> newColumn)
+    let columns = Vector.vector(Array.init columns (fun _ -> newColumn))
     getColumn 0 columns |> shouldEqual ^<| Error InvalidColumn
 
 [<Test>]
 let ``addPiece to non-full column``() = 
-    let column = Column PersistentVector.empty
-    addPiece Black column |> shouldEqual ^<| Ok(Column(PersistentVector.singleton Black))
+    let column = newColumn
+    addPiece Black column |> shouldEqual ^<| Ok(Column(Vector.vector(Black)))
 
 [<Test>]
 let ``addPiece to full column``() = 
-    let column = Column <| PersistentVector.init rows (fun _ -> Black)
+    let column = Column <| Vector.vector(Array.init rows (fun _ -> Black))
     addPiece Black column |> shouldEqual ^<| Error FullColumn
 
 [<Test>]
 let ``dropPiece adds piece to column, bitboard, and playerboard``() = 
     let colNumber = 1
-    let newState = dropPiece initialState colNumber Black |> Choice.get
+    let newState = dropPiece initialState colNumber Black |> get
     let { gameBoard = (GameBoard columns); playerBoards = playerBoards; bitBoard = (BitBoard bitBoard) } = newState
-    PersistentVector.nth (colNumber - 1) columns |> shouldEqual ^<| Column(PersistentVector.singleton Black)
-    bitBoard |> shouldEqual 1L
-    Map.find Black playerBoards |> shouldEqual (BitBoard 1L)
+    Vector.nth(columns, (colNumber - 1)) |> shouldEqual ^<| Column(Vector.vector(Black))
+    bitBoard |> shouldEqual Long.ONE
+    Map.find Black playerBoards |> shouldEqual (BitBoard Long.ONE)
 
 [<Test>]
 let ``dropPiece returns Error for full column``() = 
     let colNumber = 1
     let { gameBoard = (GameBoard columns) } = initialState
-    let fullColumn = Column <| PersistentVector.init rows (fun _ -> Black)
+    let fullColumn = Column <| Vector.vector(Array.init rows (fun _ -> Black))
     let fullColumnState = 
-        { initialState with gameBoard = GameBoard(PersistentVector.update (colNumber - 1) fullColumn columns) }
+        { initialState with gameBoard = GameBoard(Vector.assoc(columns, (colNumber - 1), fullColumn)) }
     dropPiece fullColumnState colNumber Black |> shouldEqual ^<| Error FullColumn
 
 [<Test>]
@@ -85,7 +89,7 @@ let ``isWinningBoard is false for empty board``() = isWinningBoard newBitBoard |
 [<Test>]
 let ``isWinningBoard is true for full board``() = isWinningBoard fullBitBoard |> shouldEqual true
 
-let bitBoardTotal pieces = List.fold bitSet 0L pieces
+let bitBoardTotal pieces = List.fold bitSet Long.ZERO pieces
 
 [<Test>]
 let ``isWinningBoard vertical``() = 
