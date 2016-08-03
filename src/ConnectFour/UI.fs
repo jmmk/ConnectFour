@@ -49,13 +49,24 @@ let colorString color =
     | Black -> "Black"
     | _ -> failwith "Invalid color"
 
+let playerText color =
+    let colorText = if color = Red then "Red" else "Black"
+    let className = if color = Red then "red" else "black"
+    span [attribute "class" (sprintf "player-text %s" className)]
+         [text colorText]
+
+let statusMessage message =
+    span [] [text message]
+
 let statusView status =
-    let message = match status with
-                  | Turn color -> sprintf "%s Player's Turn" (colorString color)
-                  | Tie -> "Draw Game"
-                  | Winner color -> sprintf "%s Player Wins!" (colorString color)
+    let children =
+        match status with
+        | Turn color -> [playerText color; statusMessage " Player's Turn"]
+        | Tie -> [statusMessage "Draw Game"]
+        | Winner color -> [playerText color; statusMessage " Player Wins!"]
     div [attribute "class" "status"]
-        [h3 [] [text message]]
+        [h3 [attribute "class" "status-text"] 
+            children]
 
 let view {gameState = gameState} =
     let {gameBoard = (GameBoard columns); status = status} = gameState
