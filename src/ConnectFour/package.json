@@ -5,7 +5,7 @@
   "main": "ConnectFour.js",
   "dependencies": {
     "core-js": "^2.4.1",
-    "fable-core": "^0.5.0",
+    "fable-core": "^0.5.1",
     "immutable": "^3.8.1",
     "long": "^3.2.0",
     "mori": "^0.3.2",
