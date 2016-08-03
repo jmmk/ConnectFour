@@ -2,7 +2,7 @@ module ConnectFour.Tests
 
 open NUnit.Framework
 
-open Fable.Import
+open Fable.Import.long
 open Fable.Import.mori
 
 let inline (^<|) f a = f a
@@ -58,7 +58,14 @@ let ``getColumn for invalid column number``() =
 [<Test>]
 let ``addPiece to non-full column``() = 
     let column = newColumn
-    addPiece Black column |> shouldEqual ^<| Ok(Column(Vector.vector(Black)))
+    let updatedColumn = addPiece Black column 
+    let vec = match updatedColumn with
+                 | Ok (Column vec) -> vec
+                 | _ -> failwith "Incorrect response"
+
+    Vector.nth(vec, 0)
+    |> shouldEqual 
+    ^<| Black
 
 [<Test>]
 let ``addPiece to full column``() = 
@@ -68,11 +75,13 @@ let ``addPiece to full column``() =
 [<Test>]
 let ``dropPiece adds piece to column, bitboard, and playerboard``() = 
     let colNumber = 1
-    let newState = dropPiece initialState colNumber Black |> get
+    let newState = dropPiece initialState colNumber |> get
     let { gameBoard = (GameBoard columns); playerBoards = playerBoards; bitBoard = (BitBoard bitBoard) } = newState
-    Vector.nth(columns, (colNumber - 1)) |> shouldEqual ^<| Column(Vector.vector(Black))
-    bitBoard |> shouldEqual Long.ONE
-    Map.find Black playerBoards |> shouldEqual (BitBoard Long.ONE)
+    let (Column vec) = Vector.nth(columns, (colNumber - 1)) 
+    Vector.nth(vec, 0) |> shouldEqual ^<| Black
+    true |> shouldEqual ^<| bitBoard.equals(Long.ONE)
+    let (BitBoard playerBoard) = Map.find Black playerBoards 
+    true |> shouldEqual ^<| playerBoard.equals(Long.ONE)
 
 [<Test>]
 let ``dropPiece returns Error for full column``() = 
@@ -81,13 +90,13 @@ let ``dropPiece returns Error for full column``() =
     let fullColumn = Column <| Vector.vector(Array.init rows (fun _ -> Black))
     let fullColumnState = 
         { initialState with gameBoard = GameBoard(Vector.assoc(columns, (colNumber - 1), fullColumn)) }
-    dropPiece fullColumnState colNumber Black |> shouldEqual ^<| Error FullColumn
+    dropPiece fullColumnState colNumber |> shouldEqual ^<| Error FullColumn
 
 [<Test>]
 let ``isWinningBoard is false for empty board``() = isWinningBoard newBitBoard |> shouldEqual false
 
 [<Test>]
-let ``isWinningBoard is true for full board``() = isWinningBoard fullBitBoard |> shouldEqual true
+let ``isWinningBoard is true for full board``() = isWinningBoard (BitBoard fullBitBoard) |> shouldEqual true
 
 let bitBoardTotal pieces = List.fold bitSet Long.ZERO pieces
 
@@ -126,13 +135,13 @@ let ``isWinningBoard diagonal``() =
 let ``end to end``() = 
     let endState = 
         initialState
-        |> (fun state -> dropPiece state 1 Black |> get)
-        |> (fun state -> dropPiece state 2 Red |> get)
-        |> (fun state -> dropPiece state 1 Black |> get)
-        |> (fun state -> dropPiece state 2 Red |> get)
-        |> (fun state -> dropPiece state 1 Black |> get)
-        |> (fun state -> dropPiece state 2 Red |> get)
-        |> (fun state -> dropPiece state 1 Black |> get)
+        |> (fun state -> dropPiece state 1 |> get)
+        |> (fun state -> dropPiece state 2 |> get)
+        |> (fun state -> dropPiece state 1 |> get)
+        |> (fun state -> dropPiece state 2 |> get)
+        |> (fun state -> dropPiece state 1 |> get)
+        |> (fun state -> dropPiece state 2 |> get)
+        |> (fun state -> dropPiece state 1 |> get)
     endState
     |> (fun { playerBoards = playerBoards } -> Map.find Black playerBoards)
     |> isWinningBoard

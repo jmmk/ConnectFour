@@ -5,14 +5,15 @@
   "main": "ConnectFour.js",
   "dependencies": {},
   "devDependencies": {
-    "fable-compiler": "^0.4.6",
-    "fable-core": "^0.2.3",
-    "fable-plugins-nunit": "0.0.8",
+    "fable-compiler": "^0.5.1",
+    "fable-core": "^0.5.0",
+    "fable-plugins-nunit": "0.5.0",
     "long": "^3.2.0",
     "mocha": "^3.0.0",
     "mori": "^0.3.2"
   },
   "scripts": {
+    "build": "fable",
     "test": "mocha out"
   },
   "author": "",
