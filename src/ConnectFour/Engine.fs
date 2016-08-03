@@ -79,7 +79,7 @@ let bitSet (bitBoard : Long) (i: int) = bitBoard.``or``(Long.ONE.shiftLeft(i))
 /// We can compute the value of a full bit-board with the following:
 /// List.fold bitSet 0L boardValues
 /// which gives us 279258638311359L
-let fullBitBoard = BitBoard <| Long.fromNumber(279258638311359L)
+let fullBitBoard = Long.fromNumber(279258638311359L)
 
 /// an empty bitboard is simply 0
 let newBitBoard = BitBoard Long.ZERO
@@ -87,7 +87,7 @@ let newBitBoard = BitBoard Long.ZERO
 type GameStatus = 
     | Winner of Color
     | Turn of Color
-    | Draw
+    | Tie
 
 type GameState = 
     { status : GameStatus
@@ -121,7 +121,8 @@ let isWinningBoard (BitBoard bitBoard) =
     (y.``and``(y.shiftRight(12))).``or``(z.``and``(z.shiftRight(14))).``or``(w.``and``(w.shiftRight(16))).``or``(x.``and``(x.shiftRight(2))) 
     |> (fun long -> not(long.isZero()))
 
-let isDrawBoard bitBoard = bitBoard = fullBitBoard
+let isDrawBoard (BitBoard bitBoard) = 
+    bitBoard.equals(fullBitBoard)
 
 type EngineError = 
     | FullColumn
@@ -157,11 +158,6 @@ let updatePlayerBoards state colNumber piece =
     let { playerBoards = playerBoards; gameBoard = (GameBoard columns) } = state
     let (Column column) = Vector.nth(columns, (colNumber - 1))
     let playerBoard = Map.find piece playerBoards
-    printfn "Piece: %A" piece
-    printfn "Player Boards: %A" playerBoards
-    printfn "Contains Key: %A" (Map.containsKey piece playerBoards)
-    Map.iter (fun k v -> printfn "%A: %A" k v) playerBoards
-    printfn "About to call addBit with player board: %A" playerBoard
     Map.add piece (addBit playerBoard colNumber column) playerBoards
 
 let updateStatus state colNumber piece = 
@@ -170,7 +166,7 @@ let updateStatus state colNumber piece =
     match status with
     | Turn piece -> 
         if isWinningBoard playerBoard then Winner piece
-        elif isDrawBoard bitBoard then Draw
+        elif isDrawBoard bitBoard then Tie
         else swapTurn status
     | _ -> status
 

@@ -21,5 +21,6 @@ module long =
         member __.shiftLeft(numBits: int): Long = failwith "JS only"
         member __.shiftRight(numBits: Long): Long = failwith "JS only"
         member __.shiftRight(numBits: int): Long = failwith "JS only"
+        member __.equals(other: Long): bool = failwith "JS only"
 
 
