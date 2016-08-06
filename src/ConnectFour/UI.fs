@@ -1,3 +1,5 @@
+module UI
+
 open ConnectFour
 open Fable.Core
 open Fable.Helpers
@@ -85,11 +87,9 @@ let update model action =
         | Error err -> 
             printfn "Error: %A" err
             model
-    |> (fun m -> m, [], [])
+    |> (fun m -> m, [])
 
-App.createApp { Model = newModel
-                View = view
-                Update = update }
-|> App.withStartNode "#app"
+App.createApp newModel view update
+|> App.withStartNodeSelector "#app"
 |> App.start Virtualdom.renderer
 |> ignore

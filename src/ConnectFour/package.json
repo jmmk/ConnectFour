@@ -5,15 +5,15 @@
   "main": "ConnectFour.js",
   "dependencies": {
     "core-js": "^2.4.1",
-    "fable-core": "^0.5.1",
+    "fable-core": "^0.5.2",
     "immutable": "^3.8.1",
     "long": "^3.2.0",
     "mori": "^0.3.2",
     "virtual-dom": "^2.1.1"
   },
   "devDependencies": {
-    "fable-compiler": "^0.5.1",
-    "fable-import-virtualdom": "0.5.1",
+    "fable-compiler": "^0.5.2",
+    "fable-import-virtualdom": "0.6.2",
     "source-map-loader": "^0.1.5",
     "webpack": "^1.13.1"
   },
