@@ -6,3 +6,7 @@ Connect Four in F#
 
 ## Test
 `./build.sh Test`
+
+## Play
+`./build.sh Build`
+open index.html
