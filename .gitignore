@@ -5,8 +5,8 @@
 *.userprefs
 /TestResult.xml
 **/node_modules
-**/public
 **/out
 **/temp
 **/packages
 **/*.log
+app.js*

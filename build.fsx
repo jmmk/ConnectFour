@@ -4,7 +4,8 @@
 
 open Fake
 open Fake.ProcessHelper
-open Fake.Testing
+open Fake.FileHelper
+open Fake.NpmHelper
 open Fantomas.FakeHelpers
 open Fantomas.FormatConfig
 open System
@@ -15,31 +16,50 @@ let fantomasConfig =
     { FormatConfig.Default with PageWidth = 120
                                 ReorderOpenDeclaration = true }
 
-Target "Clean" (fun _ -> CleanDirs ["public"; srcDir + "out"; testDir + "out"])
-Target "Build" (fun _ -> 
-    execProcess (fun info ->
-        info.FileName <- "npm"
-        info.WorkingDirectory <- srcDir
-        info.Arguments <- "run build") (TimeSpan.FromMinutes 5.0)
-        |> ignore)
+Target "Clean" (fun _ -> 
+    DeleteFile "app.js"
+    CleanDirs [srcDir + "/out"; testDir + "/out"])
+Target "Build" (fun _ -> NpmHelper.run { defaultNpmParams with Command = (Run "build"); WorkingDirectory = srcDir })
+Target "BuildTests" (fun _ -> NpmHelper.run { defaultNpmParams with Command = (Run "build"); WorkingDirectory = testDir })
+Target "Test" (fun _ -> NpmHelper.run { defaultNpmParams with Command = (Run "test"); WorkingDirectory = testDir })
 
-Target "Test" (fun _ -> 
-    execProcess (fun info ->
-        info.FileName <- "npm"
-        info.WorkingDirectory <- testDir
-        info.Arguments <- "run test") (TimeSpan.FromMinutes 5.0)
-        |> ignore)
+let repo = "git@github.com:jmmk/ConnectFour.git"
+let branch = "gh-pages"
+let files = ["app.js"; "app.css"; "index.html"]
+Target "Deploy" (fun _ ->
+    let tempDir = 
+        ExecProcessAndReturnMessages (fun info ->
+            info.FileName <- "mktemp"
+            info.Arguments <- "-d /tmp/ConnectFour.XXXXX") (TimeSpan.FromSeconds 1.0)
+        |> (fun { Messages = messages } -> messages.[0])
+
+    Git.Repository.clone tempDir repo tempDir
+    Git.Branches.checkoutBranch tempDir branch
+    Git.Repository.fullclean tempDir
+    Copy tempDir files
+    Git.Staging.StageAll tempDir
+    let latestCommit = Git.Information.getCurrentSHA1 "."
+    Git.Commit.Commit tempDir (sprintf "Update to commit %s" latestCommit)
+    Git.Branches.pushBranch tempDir "origin" branch
+    DeleteDir tempDir
+    latestCommit |> ignore
+)
 
 Target "Format" (fun _ -> 
     !!"build.fsx" ++ "src/**/*.fs" ++ "tests/**/*.fs"
     |> formatCode fantomasConfig
-    |> ignore)
+    |> ignore
+)
 
 Target "Default" DoNothing
 
 "Clean" 
     ==> "Build"
     ==> "Default"
+    ==> "BuildTests"
     ==> "Test"
+
+"Build"
+    ==> "Deploy"
 
 RunTargetOrDefault "Default"

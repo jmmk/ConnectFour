@@ -8,6 +8,7 @@ NUGET
       System.Reflection.Metadata (>= 1.4.1-beta-24227-04)
     Microsoft.NETCore.Platforms (1.0.1) - framework: >= netstandard10
     Microsoft.NETCore.Targets (1.0.1) - framework: >= netstandard10
+    NUnit (3.4.1)
     System.Collections (4.0.11) - framework: >= netstandard10
       Microsoft.NETCore.Platforms (>= 1.0.1) - framework: dnxcore50, netstandard10, >= netstandard13
       Microsoft.NETCore.Targets (>= 1.0.1) - framework: dnxcore50, netstandard10, >= netstandard13

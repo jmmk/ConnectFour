@@ -5,7 +5,7 @@ var cfg = {
   devtool: "source-map",
   entry: "./out/UI.js",
   output: {
-    path: path.join(__dirname, "../../public"),
+    path: path.join(__dirname, "../.."),
     filename: "app.js"
   },
   module: {
