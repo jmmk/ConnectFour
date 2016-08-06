@@ -1,13 +1,11 @@
 module ConnectFour.Tests
 
-open NUnit.Framework
-
 open Fable.Import.long
 open Fable.Import.mori
+open NUnit.Framework
 
 let inline (^<|) f a = f a
-
-let shouldEqual (expected: 'T) (actual: 'T) =
+let shouldEqual (expected : 'T) (actual : 'T) = 
     Assert.AreEqual(true, (expected = actual), sprintf "Expected: %A\nActual: %A" expected actual)
 
 let initialState = 
@@ -30,12 +28,12 @@ let ``hasFreeSpace for empty column``() =
 
 [<Test>]
 let ``hasFreeSpace for full column``() = 
-    let column = Column(Vector.vector(Array.init columns (fun _ -> Black)))
+    let column = Column(Vector.vector (Array.init columns (fun _ -> Black)))
     hasFreeSpace column |> shouldEqual false
 
 [<Test>]
 let ``hasFreeSpace for column with empty spaces``() = 
-    let column = Column(Vector.vector(Array.init (rows - 1) (fun _ -> Black)))
+    let column = Column(Vector.vector (Array.init (rows - 1) (fun _ -> Black)))
     hasFreeSpace column |> shouldEqual true
 
 [<Test>]
@@ -47,29 +45,28 @@ let ``isValid column number``() =
 
 [<Test>]
 let ``getColumn for valid column number``() = 
-    let columns = Vector.vector(Array.init columns (fun _ -> newColumn))
+    let columns = Vector.vector (Array.init columns (fun _ -> newColumn))
     getColumn 1 columns |> shouldEqual ^<| Ok(newColumn)
 
 [<Test>]
 let ``getColumn for invalid column number``() = 
-    let columns = Vector.vector(Array.init columns (fun _ -> newColumn))
+    let columns = Vector.vector (Array.init columns (fun _ -> newColumn))
     getColumn 0 columns |> shouldEqual ^<| Error InvalidColumn
 
 [<Test>]
 let ``addPiece to non-full column``() = 
     let column = newColumn
-    let updatedColumn = addPiece Black column 
-    let vec = match updatedColumn with
-                 | Ok (Column vec) -> vec
-                 | _ -> failwith "Incorrect response"
-
-    Vector.nth(vec, 0)
-    |> shouldEqual 
-    ^<| Black
+    let updatedColumn = addPiece Black column
+    
+    let vec = 
+        match updatedColumn with
+        | Ok(Column vec) -> vec
+        | _ -> failwith "Incorrect response"
+    Vector.nth (vec, 0) |> shouldEqual ^<| Black
 
 [<Test>]
 let ``addPiece to full column``() = 
-    let column = Column <| Vector.vector(Array.init rows (fun _ -> Black))
+    let column = Column <| Vector.vector (Array.init rows (fun _ -> Black))
     addPiece Black column |> shouldEqual ^<| Error FullColumn
 
 [<Test>]
@@ -77,19 +74,19 @@ let ``dropPiece adds piece to column, bitboard, and playerboard``() =
     let colNumber = 1
     let newState = dropPiece initialState colNumber |> get
     let { gameBoard = (GameBoard columns); playerBoards = playerBoards; bitBoard = (BitBoard bitBoard) } = newState
-    let (Column vec) = Vector.nth(columns, (colNumber - 1)) 
-    Vector.nth(vec, 0) |> shouldEqual ^<| Black
-    true |> shouldEqual ^<| bitBoard.equals(Long.ONE)
-    let (BitBoard playerBoard) = Map.find Black playerBoards 
-    true |> shouldEqual ^<| playerBoard.equals(Long.ONE)
+    let (Column vec) = Vector.nth (columns, (colNumber - 1))
+    Vector.nth (vec, 0) |> shouldEqual ^<| Black
+    true |> shouldEqual ^<| bitBoard.equals (Long.ONE)
+    let (BitBoard playerBoard) = Map.find Black playerBoards
+    true |> shouldEqual ^<| playerBoard.equals (Long.ONE)
 
 [<Test>]
 let ``dropPiece returns Error for full column``() = 
     let colNumber = 1
     let { gameBoard = (GameBoard columns) } = initialState
-    let fullColumn = Column <| Vector.vector(Array.init rows (fun _ -> Black))
+    let fullColumn = Column <| Vector.vector (Array.init rows (fun _ -> Black))
     let fullColumnState = 
-        { initialState with gameBoard = GameBoard(Vector.assoc(columns, (colNumber - 1), fullColumn)) }
+        { initialState with gameBoard = GameBoard(Vector.assoc (columns, (colNumber - 1), fullColumn)) }
     dropPiece fullColumnState colNumber |> shouldEqual ^<| Error FullColumn
 
 [<Test>]

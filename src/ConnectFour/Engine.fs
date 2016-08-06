@@ -4,21 +4,25 @@ open Fable.Import.long
 open Fable.Import.mori
 
 // Result shim until F# 4.1
-let (|Ok|Error|) choice =
+let (|Ok|Error|) choice = 
     match choice with
     | Choice1Of2 a -> Ok a
     | Choice2Of2 b -> Error b
+
 let Ok = Choice1Of2
 let Error = Choice2Of2
+
 let bind f result = 
     match result with
     | Ok a -> f a
     | Error b -> Error b
+
 let map f result = 
     match result with
-    | Ok a -> Ok (f a)
+    | Ok a -> Ok(f a)
     | Error b -> Error b
-let get result =
+
+let get result = 
     match result with
     | Ok a -> a
     | Error b -> failwith (sprintf "%A" b)
@@ -49,10 +53,10 @@ let rows = 6
 let columns = 7
 
 let newColumn = Column <| Vector.vector()
-let newGameBoard = GameBoard(Vector.vector(Array.init columns (fun _ -> newColumn)))
+let newGameBoard = GameBoard(Vector.vector (Array.init columns (fun _ -> newColumn)))
 
 /// Set the bit at position i to 1
-let bitSet (bitBoard : Long) (i: int) = bitBoard.``or``(Long.ONE.shiftLeft(i))
+let bitSet (bitBoard : Long) (i : int) = bitBoard.``or`` (Long.ONE.shiftLeft (i))
 
 /// A BitBoard is a 64-bit integer whose bits represent board spaces.
 /// The bit position represented by each board space is as follows:
@@ -79,7 +83,7 @@ let bitSet (bitBoard : Long) (i: int) = bitBoard.``or``(Long.ONE.shiftLeft(i))
 /// We can compute the value of a full bit-board with the following:
 /// List.fold bitSet 0L boardValues
 /// which gives us 279258638311359L
-let fullBitBoard = Long.fromNumber(279258638311359L)
+let fullBitBoard = Long.fromNumber (279258638311359L)
 
 /// an empty bitboard is simply 0
 let newBitBoard = BitBoard Long.ZERO
@@ -109,20 +113,19 @@ let swapTurn status =
     | Turn Red -> Turn Black
     | _ -> status
 
-let hasFreeSpace (Column spaces) = Vector.count(spaces) < rows
+let hasFreeSpace (Column spaces) = Vector.count (spaces) < rows
 let isValid column = column > 0 && column <= columns
 
 /// algorithm found here: http://stackoverflow.com/a/4261803
 let isWinningBoard (BitBoard bitBoard) = 
-    let y = bitBoard.``and``(bitBoard.shiftRight(6))
-    let z = bitBoard.``and``(bitBoard.shiftRight(7))
-    let w = bitBoard.``and``(bitBoard.shiftRight(8))
-    let x = bitBoard.``and``(bitBoard.shiftRight(1))
-    (y.``and``(y.shiftRight(12))).``or``(z.``and``(z.shiftRight(14))).``or``(w.``and``(w.shiftRight(16))).``or``(x.``and``(x.shiftRight(2))) 
-    |> (fun long -> not(long.isZero()))
+    let y = bitBoard.``and`` (bitBoard.shiftRight (6))
+    let z = bitBoard.``and`` (bitBoard.shiftRight (7))
+    let w = bitBoard.``and`` (bitBoard.shiftRight (8))
+    let x = bitBoard.``and`` (bitBoard.shiftRight (1))
+    (y.``and`` (y.shiftRight (12))).``or``(z.``and`` (z.shiftRight (14))).``or``(w.``and`` (w.shiftRight (16)))
+        .``or``(x.``and`` (x.shiftRight (2))) |> (fun long -> not (long.isZero()))
 
-let isDrawBoard (BitBoard bitBoard) = 
-    bitBoard.equals(fullBitBoard)
+let isDrawBoard (BitBoard bitBoard) = bitBoard.equals (fullBitBoard)
 
 type EngineError = 
     | FullColumn
@@ -130,33 +133,33 @@ type EngineError =
     | IllegalOperation
 
 let getColumn colNumber columns = 
-    if isValid colNumber then Ok <| Vector.nth(columns, (colNumber - 1))
+    if isValid colNumber then Ok <| Vector.nth (columns, (colNumber - 1))
     else Error InvalidColumn
 
 let addPiece piece column = 
     let (Column spaces) = column
-    if hasFreeSpace column then Ok <| Column(Vector.conj(spaces, piece))
+    if hasFreeSpace column then Ok <| Column(Vector.conj (spaces, piece))
     else Error FullColumn
 
 let updateGameBoard state colNumber piece = 
     let { gameBoard = (GameBoard columns) } = state
     getColumn colNumber columns
     |> bind (fun col -> addPiece piece col)
-    |> map (fun col -> GameBoard(Vector.assoc(columns, (colNumber - 1), col)))
+    |> map (fun col -> GameBoard(Vector.assoc (columns, (colNumber - 1), col)))
 
 let addBit (BitBoard bitBoard) colNumber col = 
     let x = colNumber - 1
-    let y = Vector.count(col) - 1
+    let y = Vector.count (col) - 1
     BitBoard(bitSet bitBoard ((x * 7) + y))
 
 let updateBitBoard state colNumber = 
     let { bitBoard = bitBoard; gameBoard = (GameBoard columns) } = state
-    let (Column column) = Vector.nth(columns, (colNumber - 1))
+    let (Column column) = Vector.nth (columns, (colNumber - 1))
     addBit bitBoard colNumber column
 
 let updatePlayerBoards state colNumber piece = 
     let { playerBoards = playerBoards; gameBoard = (GameBoard columns) } = state
-    let (Column column) = Vector.nth(columns, (colNumber - 1))
+    let (Column column) = Vector.nth (columns, (colNumber - 1))
     let playerBoard = Map.find piece playerBoards
     Map.add piece (addBit playerBoard colNumber column) playerBoards
 
@@ -171,7 +174,7 @@ let updateStatus state colNumber piece =
     | _ -> status
 
 let dropPiece state colNumber = 
-    let {status = status} = state
+    let { status = status } = state
     match status with
     | Turn piece -> 
         updateGameBoard state colNumber piece
