@@ -1,0 +1,65 @@
+html, body {
+	color: #222324;
+	background-color: white;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	text-align: center;
+}
+
+h1 {
+	font-weight: 300;
+	font-size: 48px;
+}
+
+.board {
+	background-color: #fce473;
+	width: 595px;
+	margin: auto;
+	padding: 10px;
+}
+
+.row {
+	width: 595px;
+	margin: auto;
+}
+
+.cell {
+	display: inline-block;
+	width: 85px;
+	height: 85px;
+	border-radius: 43px;
+}
+
+.piece {
+	width: 70px;
+	height: 70px;
+	border-radius: 35px;
+	margin: 10px;
+}
+
+.piece.black {
+	background-color: #4c3333;
+}
+
+.piece.empty {
+	background-color: white;
+}
+
+.piece.red {
+	background-color: #ed6c63;
+}
+
+.footer {
+	height: 100px;
+}
+
+.status-text {
+	color: #69707a;
+}
+
+.player-text.red {
+	color: #ed6c63;
+}
+
+.player-text.black {
+	color: #4c3333;
+}
