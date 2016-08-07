@@ -49,7 +49,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.newModel = exports.Model = exports.Action = undefined;
+	exports.boardControls = exports.newModel = exports.Model = exports.Action = undefined;
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
@@ -169,12 +169,31 @@
 	    return function () {
 	        var tagName = "div";
 	        return function (children) {
+	            return new _FableHelpers.Html.Types.DomNode("Element", [[tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", [["class", "board-container"]])])], children]);
+	        };
+	    }()(_fableCore.List.ofArray([function () {
+	        var tagName = "div";
+	        return function (children) {
 	            return new _FableHelpers.Html.Types.DomNode("Element", [[tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", [["class", "board"]])])], children]);
 	        };
 	    }()(_fableCore.List.map(function (rowIndex) {
 	        return row(rowFromColumns(columns, rowIndex));
-	    }, _fableCore.Seq.toList(_fableCore.Seq.rangeStep(startIndex, -1, 0))));
+	    }, _fableCore.Seq.toList(_fableCore.Seq.rangeStep(startIndex, -1, 0))))]));
 	}
+	
+	var boardControls = exports.boardControls = function () {
+	    var tagName = "div";
+	    return function (children) {
+	        return new _FableHelpers.Html.Types.DomNode("Element", [[tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", [["class", "board-controls"]])])], children]);
+	    };
+	}()(_fableCore.List.ofArray([function () {
+	    var tagName = "button";
+	    return function (children) {
+	        return new _FableHelpers.Html.Types.DomNode("Element", [[tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", [["class", "new-game-button"]]), new _FableHelpers.Html.Types.Attribute("EventHandler", [["onclick", function (_arg1) {
+	            return new Action("NewGameClick", []);
+	        }]])])], children]);
+	    };
+	}()(_fableCore.List.ofArray([new _FableHelpers.Html.Types.DomNode("Text", ["New Game!"])]))]));
 	
 	function colorString(color) {
 	    return color.Case === "Red" ? "Red" : color.Case === "Black" ? "Black" : function () {
@@ -232,22 +251,22 @@
 	    return function () {
 	        var tagName = "div";
 	        return function (children) {
-	            return new _FableHelpers.Html.Types.DomNode("Element", [[tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", [["class", "container"]])])], children]);
+	            return new _FableHelpers.Html.Types.DomNode("Element", [[tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", [["class", "game-container"]])])], children]);
 	        };
-	    }()(_fableCore.List.ofArray([statusView(status), board(columns)]));
+	    }()(_fableCore.List.ofArray([statusView(status), board(columns), boardControls]));
 	}
 	
 	function update(model, action) {
 	    var gameState = model.gameState;
 	    return function (m) {
 	        return [m, new _fableCore.List()];
-	    }(function () {
+	    }(action.Case === "NewGameClick" ? newModel : function () {
 	        var colNumber = action.Fields[0];
 	        var matchValue = (0, _Engine.dropPiece)(gameState, colNumber);
-	        var activePatternResult922 = (0, _Engine.$Ok$Error$)(matchValue);
+	        var activePatternResult923 = (0, _Engine.$Ok$Error$)(matchValue);
 	
-	        if (activePatternResult922.Case === "Choice2Of2") {
-	            var err = activePatternResult922.Fields[0];
+	        if (activePatternResult923.Case === "Choice2Of2") {
+	            var err = activePatternResult923.Fields[0];
 	
 	            _fableCore.String.fsFormat("Error: %A")(function (x) {
 	                console.log(x);
@@ -255,7 +274,7 @@
 	
 	            return model;
 	        } else {
-	            var updatedState = activePatternResult922.Fields[0];
+	            var updatedState = activePatternResult923.Fields[0];
 	            return new Model(updatedState);
 	        }
 	    }());
