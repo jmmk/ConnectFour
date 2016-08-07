@@ -20,6 +20,7 @@ Target "Clean" (fun _ ->
     DeleteFile "app.js"
     CleanDirs [srcDir + "/out"; testDir + "/out"])
 Target "Build" (fun _ -> NpmHelper.run { defaultNpmParams with Command = (Run "build"); WorkingDirectory = srcDir })
+Target "Watch" (fun _ -> NpmHelper.run { defaultNpmParams with Command = (Run "watch"); WorkingDirectory = srcDir })
 Target "BuildTests" (fun _ -> NpmHelper.run { defaultNpmParams with Command = (Run "build"); WorkingDirectory = testDir })
 Target "Test" (fun _ -> NpmHelper.run { defaultNpmParams with Command = (Run "test"); WorkingDirectory = testDir })
 
