@@ -26,7 +26,7 @@ Target "Test" (fun _ -> NpmHelper.run { defaultNpmParams with Command = (Run "te
 
 let repo = "git@github.com:jmmk/ConnectFour.git"
 let branch = "gh-pages"
-let files = ["app.js"; "app.css"; "index.html"]
+let files = ["app.js"; "index.html"]
 Target "Deploy" (fun _ ->
     let tempDir = 
         ExecProcessAndReturnMessages (fun info ->
