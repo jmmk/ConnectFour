@@ -31,9 +31,9 @@ h1 {
 
 .cell {
 	display: inline-block;
-	width: 14.2%;
+	width: 14.2857142868%;
 	height: 0;
-	padding-bottom: 14.2%;
+	padding-bottom: 14.285714286%;
 }
 
 .piece {
@@ -41,7 +41,7 @@ h1 {
 	height: 0;
 	padding-bottom: 82%;
 	border-radius: 50%;
-	margin: 10px;
+	margin: 9%;
 }
 
 .piece.black {
