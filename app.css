@@ -19,27 +19,28 @@ h1 {
 
 .board {
 	background-color: #fce473;
-	width: 595px;
+	width: 70%;
 	margin: auto;
 	padding: 10px;
 }
 
 .row {
-	width: 595px;
+	width: 100%;
 	margin: auto;
 }
 
 .cell {
 	display: inline-block;
-	width: 85px;
-	height: 85px;
-	border-radius: 43px;
+	width: 14.2%;
+	height: 0;
+	padding-bottom: 14.2%;
 }
 
 .piece {
-	width: 70px;
-	height: 70px;
-	border-radius: 35px;
+	width: 82%;
+	height: 0;
+	padding-bottom: 82%;
+	border-radius: 50%;
 	margin: 10px;
 }
 
