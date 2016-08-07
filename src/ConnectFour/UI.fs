@@ -14,6 +14,7 @@ Node.require.Invoke("core-js") |> ignore
 
 type Action = 
     | ColumnClick of int
+    | NewGameClick
 
 type Model = 
     { gameState : GameState }
@@ -39,8 +40,16 @@ let rowFromColumns columns rowIndex = Vector.map ((fun (Column col) -> Vector.nt
 
 let board columns = 
     let startIndex = rows - 1
-    div [ attribute "class" "board" ] 
-        (List.map (fun rowIndex -> row (rowFromColumns columns rowIndex)) [ startIndex..(-1)..0 ])
+    div [attribute "class" "board-container"]
+        [div [ attribute "class" "board" ] 
+             (List.map (fun rowIndex -> row (rowFromColumns columns rowIndex)) [ startIndex..(-1)..0 ])
+        ]
+
+let boardControls =
+    div [attribute "class" "board-controls"]
+        [button [attribute "class" "new-game-button"
+                 onMouseClick (fun _ -> NewGameClick)] 
+                [text "New Game!"]]
 
 let colorString color = 
     match color with
@@ -75,8 +84,9 @@ let statusView status =
 
 let view { gameState = gameState } = 
     let { gameBoard = (GameBoard columns); status = status } = gameState
-    div [ attribute "class" "container" ] [ statusView status
-                                            board columns ]
+    div [ attribute "class" "game-container" ] [ statusView status
+                                                 board columns
+                                                 boardControls ]
 
 let update model action = 
     let { gameState = gameState } = model
@@ -87,6 +97,8 @@ let update model action =
         | Error err -> 
             printfn "Error: %A" err
             model
+    | NewGameClick ->
+        newModel
     |> (fun m -> m, [])
 
 App.createApp newModel view update
