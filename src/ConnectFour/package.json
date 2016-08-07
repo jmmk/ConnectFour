@@ -12,10 +12,15 @@
     "virtual-dom": "^2.1.1"
   },
   "devDependencies": {
+    "css-loader": "^0.23.1",
     "fable-compiler": "^0.5.2",
     "fable-import-virtualdom": "0.6.2",
+    "node-sass": "^3.8.0",
+    "sass-loader": "^4.0.0",
     "source-map-loader": "^0.1.5",
-    "webpack": "^1.13.1"
+    "style-loader": "^0.13.1",
+    "webpack": "^1.13.1",
+    "webpack-dev-server": "^1.14.1"
   },
   "scripts": {
     "build": "fable",

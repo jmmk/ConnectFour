@@ -12,6 +12,9 @@ open Fable.Import.mori
 // Evaluate polyfill code before anything else
 Node.require.Invoke("core-js") |> ignore
 
+// Include CSS
+Node.require.Invoke("../css/app.scss") |> ignore
+
 type Action = 
     | ColumnClick of int
     | NewGameClick

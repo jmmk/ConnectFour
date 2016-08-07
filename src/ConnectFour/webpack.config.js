@@ -9,6 +9,12 @@ var cfg = {
     filename: "app.js"
   },
   module: {
+    loaders: [
+      {
+        include: path.join(__dirname, 'css/app.scss'),
+        loaders: ["style", "css", "sass"]
+      }
+    ],
     preLoaders: [
       {
         test: /\.js$/,

@@ -1,9 +1,11 @@
+$default-font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+$default-color: #222324;
+
 html, body {
-	color: #222324;
+	color: $default-color;
 	background-color: #fff;
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-family: $default-font-family;
 	text-align: center;
-	overflow: hidden;
 }
 
 h1 {
@@ -29,19 +31,24 @@ h1 {
 	margin: auto;
 }
 
+$rows: 7;
+$cell-width-percent: percentage(1 / $rows);
 .cell {
 	display: inline-block;
-	width: 14.2857142868%;
+	width: $cell-width-percent;
 	height: 0;
-	padding-bottom: 14.285714286%;
+	padding-bottom: $cell-width-percent;
 }
 
+$piece-width-decimal: 0.82;
+$piece-width-percent: percentage($piece-width-decimal);
+$piece-margin-percent: percentage((1 - $piece-width-decimal) / 2);
 .piece {
-	width: 82%;
+	width: $piece-width-percent;
 	height: 0;
-	padding-bottom: 82%;
+	padding-bottom: $piece-width-percent;
 	border-radius: 50%;
-	margin: 9%;
+	margin: $piece-margin-percent;
 }
 
 .piece.black {
@@ -54,10 +61,6 @@ h1 {
 
 .piece.red {
 	background-color: #ed6c63;
-}
-
-.footer {
-	height: 100px;
 }
 
 .status-text {
@@ -79,8 +82,8 @@ h1 {
 }
 
 .new-game-button {
-	color: #222324;
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: $default-color;
+	font-family: $default-font-family;
 	padding: 6px 12px;
 	background-color: #fff;
 	border: 1px solid #ccc;
