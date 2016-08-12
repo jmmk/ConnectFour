@@ -4,9 +4,10 @@
 /.paket/paket.exe
 *.userprefs
 /TestResult.xml
-**/node_modules
-**/out
-**/temp
+/node_modules
 **/packages
 **/*.log
-app.js*
+/dist
+/fable-out
+/fable-test-out
+/fable_external

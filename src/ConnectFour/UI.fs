@@ -13,7 +13,7 @@ open Fable.Import.mori
 Node.require.Invoke("core-js") |> ignore
 
 // Include CSS
-Node.require.Invoke("../css/app.scss") |> ignore
+Node.require.Invoke("app.scss") |> ignore
 
 type Action = 
     | ColumnClick of int

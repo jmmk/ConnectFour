@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Fable.Core">
-      <HintPath>node_modules/fable-core/Fable.Core.dll</HintPath>
+      <HintPath>../../node_modules/fable-core/Fable.Core.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
@@ -45,7 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <Compile Include="node_modules/fable-import-virtualdom/Fable.Helpers.Virtualdom.fs" />
+    <Compile Include="../../node_modules/fable-import-virtualdom/Fable.Helpers.Virtualdom.fs" />
     <Compile Include="Fable.Import.Mori.fs" />
     <Compile Include="Fable.Import.Long.fs" />
     <Compile Include="Engine.fs" />

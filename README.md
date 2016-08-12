@@ -1,6 +1,9 @@
 # ConnectFour
 Connect Four in F#
 
+## Set up
+`npm install`
+
 ## Build
 `./build.sh Build`
 
