@@ -11,7 +11,6 @@ open Fable.Import.mori
 
 // Evaluate polyfill code before anything else
 Node.require.Invoke("core-js") |> ignore
-
 // Include CSS
 Node.require.Invoke("app.scss") |> ignore
 
@@ -43,16 +42,13 @@ let rowFromColumns columns rowIndex = Vector.map ((fun (Column col) -> Vector.nt
 
 let board columns = 
     let startIndex = rows - 1
-    div [attribute "class" "board-container"]
-        [div [ attribute "class" "board" ] 
-             (List.map (fun rowIndex -> row (rowFromColumns columns rowIndex)) [ startIndex..(-1)..0 ])
-        ]
+    div [ attribute "class" "board-container" ] 
+        [ div [ attribute "class" "board" ] 
+              (List.map (fun rowIndex -> row (rowFromColumns columns rowIndex)) [ startIndex..(-1)..0 ]) ]
 
-let boardControls =
-    div [attribute "class" "board-controls"]
-        [button [attribute "class" "new-game-button"
-                 onMouseClick (fun _ -> NewGameClick)] 
-                [text "New Game!"]]
+let boardControls = 
+    div [ attribute "class" "board-controls" ] [ button [ attribute "class" "new-game-button"
+                                                          onMouseClick (fun _ -> NewGameClick) ] [ text "New Game!" ] ]
 
 let colorString color = 
     match color with
@@ -100,8 +96,7 @@ let update model action =
         | Error err -> 
             printfn "Error: %A" err
             model
-    | NewGameClick ->
-        newModel
+    | NewGameClick -> newModel
     |> (fun m -> m, [])
 
 App.createApp newModel view update
