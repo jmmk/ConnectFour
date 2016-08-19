@@ -1,15 +1,15 @@
 # ConnectFour
-Connect Four in F#
+Connect Four in the browser using F# and Fable
 
 ## Set up
 `npm install`
 
-## Build
-`./build.sh Build`
+## Develop
+`./build.sh Watch`
 
 ## Test
 `./build.sh Test`
 
-## Play
-`./build.sh Build`
-open index.html
+## Try it out locally
+- `./build.sh Build`
+- open dist/index.html
