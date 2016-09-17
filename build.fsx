@@ -1,6 +1,5 @@
 #r "packages/FAKE/tools/FakeLib.dll"
-#r "packages/Fantomas/lib/FantomasLib.dll"
-#r "packages/FSharp.Compiler.Service/lib/net45/FSharp.Compiler.Service.dll"
+#r "packages/FantomasCLI/lib/FantomasLib.dll"
 
 open Fake
 open Fake.FileHelper

@@ -1,10 +1,10 @@
 module UI
 
 open ConnectFour
-open Fable.Core
 open Fable.Arch
 open Fable.Arch.App
 open Fable.Arch.Html
+open Fable.Core
 open Fable.Import
 open Fable.Import.long
 open Fable.Import.mori
