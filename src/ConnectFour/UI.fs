@@ -2,9 +2,9 @@ module UI
 
 open ConnectFour
 open Fable.Core
-open Fable.Helpers
-open Fable.Helpers.Virtualdom
-open Fable.Helpers.Virtualdom.Html
+open Fable.Arch
+open Fable.Arch.App
+open Fable.Arch.Html
 open Fable.Import
 open Fable.Import.long
 open Fable.Import.mori
@@ -99,7 +99,7 @@ let update model action =
     | NewGameClick -> newModel
     |> (fun m -> m, [])
 
-App.createApp newModel view update
-|> App.withStartNodeSelector "#app"
-|> App.start Virtualdom.renderer
+createApp newModel view update Virtualdom.renderer
+|> withStartNodeSelector "#app"
+|> start
 |> ignore
