@@ -1,5 +1,7 @@
 module ConnectFour.Tests
 
+open ConnectFour.Engine
+open ConnectFour.Result
 open Fable.Import.long
 open Fable.Import.mori
 open NUnit.Framework

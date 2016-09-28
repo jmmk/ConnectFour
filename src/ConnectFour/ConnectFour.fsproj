@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Name>ConnectFour</Name>
@@ -50,6 +50,7 @@
     <Compile Include="../../node_modules/fable-arch/Fable.Arch.Virtualdom.fs" />
     <Compile Include="Fable.Import.Mori.fs" />
     <Compile Include="Fable.Import.Long.fs" />
+    <Compile Include="Utils.fs" />
     <Compile Include="Engine.fs" />
     <Compile Include="UI.fs" />
   </ItemGroup>
