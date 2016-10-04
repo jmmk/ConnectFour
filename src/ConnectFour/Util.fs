@@ -1,7 +1,7 @@
 namespace ConnectFour
 
+/// Result shim until F# 4.1
 module Result = 
-    // Result shim until F# 4.1
     let (|Ok|Error|) choice = 
         match choice with
         | Choice1Of2 a -> Ok a
