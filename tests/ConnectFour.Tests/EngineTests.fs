@@ -141,9 +141,7 @@ let ``end to end``() =
         |> (fun state -> dropPiece state 1 |> get)
         |> (fun state -> dropPiece state 2 |> get)
         |> (fun state -> dropPiece state 1 |> get)
-    endState
-    |> (fun { playerBoards = playerBoards } -> Map.find Black playerBoards)
+    Map.find Black endState.playerBoards
     |> isWinningBoard
     |> shouldEqual true
-    let { status = status } = endState
-    status |> shouldEqual ^<| Winner Black
+    endState.status |> shouldEqual ^<| Winner Black

@@ -152,8 +152,7 @@ module Engine =
         | _ -> status
     
     let dropPiece state colNumber = 
-        let { status = status } = state
-        match status with
+        match state.status with
         | Turn piece -> 
             updateGameBoard state colNumber piece
             |> map (fun gameBoard -> { state with gameBoard = gameBoard })

@@ -20,7 +20,7 @@ let npmBinDir =
     ExecProcessAndReturnMessages (fun info -> 
         info.FileName <- "npm"
         info.Arguments <- "bin") (TimeSpan.FromSeconds 1.0)
-    |> (fun { Messages = messages } -> messages.[0])
+    |> (fun result -> result.Messages.[0])
 
 let npmBin cmd = sprintf "%s/%s" npmBinDir cmd
 let fable = npmBin "fable"
@@ -62,7 +62,7 @@ Target "Deploy" (fun _ ->
         ExecProcessAndReturnMessages (fun info -> 
             info.FileName <- "mktemp"
             info.Arguments <- "-d /tmp/ConnectFour.XXXXX") (TimeSpan.FromSeconds 1.0)
-        |> (fun { Messages = messages } -> messages.[0])
+        |> (fun result -> result.Messages.[0])
     Git.Repository.clone tempDir repo tempDir
     Git.Branches.checkoutBranch tempDir branch
     Git.Repository.fullclean tempDir

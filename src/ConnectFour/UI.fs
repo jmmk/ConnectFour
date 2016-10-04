@@ -91,10 +91,9 @@ module UI =
                                                      boardControls ]
     
     let update model action = 
-        let { gameState = gameState } = model
         match action with
         | ColumnClick colNumber -> 
-            match (dropPiece gameState colNumber) with
+            match (dropPiece model.gameState colNumber) with
             | (Ok updatedState) -> { model with gameState = updatedState }
             | Error err -> 
                 printfn "Error: %A" err
