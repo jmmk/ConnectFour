@@ -50,7 +50,7 @@
     <Compile Include="../../node_modules/fable-arch/Fable.Arch.Virtualdom.fs" />
     <Compile Include="Fable.Import.Mori.fs" />
     <Compile Include="Fable.Import.Long.fs" />
-    <Compile Include="Utils.fs" />
+    <Compile Include="Util.fs" />
     <Compile Include="Engine.fs" />
     <Compile Include="UI.fs" />
   </ItemGroup>
