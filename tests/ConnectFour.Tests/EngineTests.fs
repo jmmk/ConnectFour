@@ -4,7 +4,7 @@ open ConnectFour.Engine
 open ConnectFour.Result
 open Fable.Import.long
 open Fable.Import.mori
-open NUnit.Framework
+open Fable.Core.Testing
 
 let inline (^<|) f a = f a
 let shouldEqual (expected : 'T) (actual : 'T) = 

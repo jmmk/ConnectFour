@@ -42,12 +42,12 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
+    <Reference Include="Fable.Arch">
+      <HintPath>../../node_modules\fable-arch\Fable.Arch.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <Compile Include="../../node_modules/fable-arch/Fable.Arch.Html.fs" />
-    <Compile Include="../../node_modules/fable-arch/Fable.Arch.App.fs" />
-    <Compile Include="../../node_modules/fable-arch/Fable.Arch.Virtualdom.fs" />
     <Compile Include="Fable.Import.Mori.fs" />
     <Compile Include="Fable.Import.Long.fs" />
     <Compile Include="Util.fs" />

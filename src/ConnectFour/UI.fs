@@ -101,7 +101,7 @@ module UI =
         | NewGameClick -> newModel
         |> (fun m -> m, [])
     
-    createApp newModel view update Virtualdom.renderer
+    createApp newModel view update (Virtualdom.createRender)
     |> withStartNodeSelector "#app"
     |> start
     |> ignore

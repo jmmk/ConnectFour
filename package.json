@@ -2,7 +2,7 @@
   "private": true,
   "dependencies": {
     "core-js": "^2.4.1",
-    "fable-core": "^0.6.3",
+    "fable-core": "^0.7.26",
     "long": "^3.2.0",
     "mori": "^0.3.2",
     "virtual-dom": "^2.1.1"
@@ -10,9 +10,9 @@
   "devDependencies": {
     "css-loader": "^0.23.1",
     "extract-text-webpack-plugin": "^1.0.1",
-    "fable-compiler": "^0.6.5",
-    "fable-arch": "0.9.1",
-    "fable-plugins-nunit": "^0.6.0",
+    "fable-compiler": "^0.7.42",
+    "fable-arch": "0.10.0",
+    "fable-plugins-nunit": "^0.7.3",
     "html-webpack-plugin": "^2.22.0",
     "mocha": "^3.0.2",
     "node-sass": "^3.8.0",
