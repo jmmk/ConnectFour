@@ -1,25 +1,26 @@
 {
   "private": true,
   "dependencies": {
-    "core-js": "^2.4.1",
     "fable-core": "^0.7.26",
     "long": "^3.2.0",
     "mori": "^0.3.2",
     "virtual-dom": "^2.1.1"
   },
   "devDependencies": {
-    "css-loader": "^0.23.1",
-    "extract-text-webpack-plugin": "^1.0.1",
-    "fable-compiler": "^0.7.42",
+    "babel-core": "^6.22.1",
+    "babel-loader": "^6.2.10",
+    "css-loader": "^0.26.1",
+    "extract-text-webpack-plugin": "beta",
     "fable-arch": "0.10.0",
+    "fable-compiler": "^0.7.42",
     "fable-plugins-nunit": "^0.7.3",
-    "html-webpack-plugin": "^2.22.0",
+    "html-webpack-plugin": "^2.28.0",
     "mocha": "^3.0.2",
-    "node-sass": "^3.8.0",
-    "sass-loader": "^4.0.0",
-    "source-map-loader": "^0.1.5",
+    "node-sass": "^4.5.0",
+    "sass-loader": "^6.0.0",
+    "source-map-loader": "^0.1.6",
     "style-loader": "^0.13.1",
-    "webpack": "^1.13.1",
-    "webpack-dev-server": "^1.14.1"
+    "webpack": "^2.2.1",
+    "webpack-dev-server": "^2.3.0"
   }
 }

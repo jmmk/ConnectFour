@@ -11,10 +11,8 @@ module UI =
     open Fable.Import.long
     open Fable.Import.mori
     
-    // Evaluate polyfill code before anything else
-    Node.require.Invoke("core-js") |> ignore
     // Include CSS
-    Node.require.Invoke("app.scss") |> ignore
+    JsInterop.importAll "app.scss" |> ignore
     
     type Action = 
         | ColumnClick of int

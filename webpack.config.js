@@ -7,16 +7,24 @@ var isProduction = (process.env.NODE_ENV === 'production');
 var cfg = {
   entry: "UI.js",
   resolve: {
-    extensions: ["", ".js", ".scss"],
-    root: [__dirname, path.join(__dirname, "static"), path.join(__dirname, "fable-out")]
+    extensions: [".js", ".scss"],
+    modules: [path.join(__dirname, "static"), path.join(__dirname, "fable-out"), path.join(__dirname, "node_modules")]
   },
   output: {
     path: path.join(__dirname, "dist"),
     filename: "app.js"
   },
   module: {
-    loaders: [],
-    preLoaders: []
+    rules: [{
+      test: /\.js$/,
+      loader: "babel-loader",
+      exclude: /node_modules/,
+      options: {
+        "presets": [
+          ["es2015", { "modules": false }]
+        ]
+      }
+    }],
   },
   plugins: [
     new webpack.DefinePlugin({
@@ -32,26 +40,25 @@ var cfg = {
 };
 
 if (isProduction) {
-  cfg.plugins = cfg.plugins.concat([
-    new ExtractTextPlugin("app.css")
-  ]);
+  cfg.plugins.push( new ExtractTextPlugin({ filename: "app.css" }) );
 
-  cfg.module.loaders = [{
+  cfg.module.rules.push({
     test: /\.scss$/,
     exclude: /node_modules/,
-    loader: ExtractTextPlugin.extract(["css", "sass"])
-  }];
+    loader: ExtractTextPlugin.extract(["css-loader", "sass-loader"])
+  });
 } else {
-  cfg.module.loaders = [{
+  cfg.module.rules.push({
     test: /\.scss$/,
-    loaders: ["style", "css?sourceMap", "sass?sourceMap"]
-  }];
+    use: ["style-loader", "css-loader?sourceMap", "sass-loader?sourceMap"]
+  });
 
-  cfg.module.preLoaders = [{
+  cfg.module.rules.push({
     test: /\.js$/,
+    enforce: "pre",
     exclude: /node_modules/,
     loader: "source-map-loader"
-  }];
+  });
 
   cfg.devtool = "source-map";
 }
